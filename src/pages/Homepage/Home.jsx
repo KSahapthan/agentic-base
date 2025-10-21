@@ -18,6 +18,7 @@ const products = [
 
 const Home = () => (
   <div className="home-container">
+    {/* the main eye-catchy area */}
     <div className="hero-section">
       <h1 className="hero-title">Welcome to AgenticBase</h1>
       <p className="hero-subtitle">
@@ -28,6 +29,7 @@ const Home = () => (
         <button className="cta-btn secondary">Learn More</button>
       </div>
     </div>
+    {/* products available */}
     <div className="products-section">
       {products.map((product) => (
         <ProductCard 
@@ -37,6 +39,10 @@ const Home = () => (
         />
       ))}
     </div>
+    {/* Footer */}
+    <footer className="home-footer">
+      Created by <a href="https://github.com/KSahapthan" target="_blank" rel="noopener noreferrer">KSahapthan</a>
+    </footer>
   </div>
 );
 

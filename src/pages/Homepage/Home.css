@@ -159,3 +159,23 @@
     font-size: 14px;
   }
 }
+
+/* Footer */
+.home-footer {
+  margin-top: 30px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #3a393f;
+  text-align: center;
+}
+
+.home-footer a {
+  color: #a08605c1;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.home-footer a:hover {
+  color: #8c6c04;
+}
