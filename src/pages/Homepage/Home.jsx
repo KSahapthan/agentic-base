@@ -2,15 +2,17 @@
 import React from 'react';
 import './Home.css';
 import ProductCard from './ProductCard';
+import NihonAgentText from '../../assets/display-text/NA.md?raw';
+import CodeExplorerText from '../../assets/display-text/CE.md?raw';
 
 const products = [
   {
     title: 'NihonAgent',
-    description: 'An agentic Japanese tutor that adapts to your pace, helping you learn Japanese interactively with AI-powered exercises and instant feedback'
+    description: NihonAgentText
   },
   {
     title: 'CodeExplorer',
-    description: 'A powerful agent designed to navigate and analyze codebases and repositories, making it easy to understand, debug, and manage large projects efficiently'
+    description: CodeExplorerText
   }
 ];
 
@@ -26,7 +28,6 @@ const Home = () => (
         <button className="cta-btn secondary">Learn More</button>
       </div>
     </div>
-
     <div className="products-section">
       {products.map((product) => (
         <ProductCard 
