@@ -1,0 +1,62 @@
+/* src/components/Nav/Nav.css */
+
+/* navigation bar styles */
+.navbar {
+  display: flex;
+  flex-direction:row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255,255,255,1);
+  height: 75px;
+  border: none;
+  padding-bottom: 3px;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  margin-top: 12px;
+}
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  margin-right: 12px;
+}
+
+/* Center logo + text */
+.nav-title {
+  font-style: normal; 
+  font-size: 32px;
+  color: #3a393f; 
+}
+
+/* Buttons for icons */
+.icon-btn {
+  background: none;
+  border: none;
+}
+.nav-icon {
+  height: 38px;
+  width: 38px;
+  cursor: pointer;
+}
+.icon-wrapper {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+}
+.icon-label {
+  font-size: 12px; 
+  font-weight: bold;
+  color: #a08605c1; 
+  font-weight: 500;
+}
+
