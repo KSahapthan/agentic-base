@@ -7,65 +7,49 @@ import SettingsIcon from '../../assets/settings-1.png';
 import HelpIcon from '../../assets/help-1.png';
 import ProfileIcon from '../../assets/profile-1.png';
 
+// Small reusable component for icon + label
+const IconButton = ({ src, alt, label }) => (
+  <div className="icon-wrapper">
+    <button className="icon-btn">
+      <img src={src} alt={alt} className="nav-icon" />
+    </button>
+    <span className="icon-label">{label}</span>
+  </div>
+);
+
 const Nav = () => {
+  // Left section icons
+  const leftIcons = [
+    { src: NihonAgentIcon, alt: 'NihonAgent', label: 'NihonAgent' },
+    { src: CodeExplorerIcon, alt: 'CodeExplorer', label: 'CodeExplorer' },
+  ];
+
+  // Right section icons
+  const rightIcons = [
+    { src: SettingsIcon, alt: 'Settings', label: 'Settings' },
+    { src: ProfileIcon, alt: 'Profile', label: 'Profile' },
+    { src: HelpIcon, alt: 'Help/About', label: 'Help' },
+  ];
+
   return (
     <nav className="navbar">
-      {/* Left section: icons for agents */}
+      {/* Left section */}
       <div className="nav-left">
-        <div className="icon-wrapper">
-          <button className="icon-btn">
-            <img 
-              src={NihonAgentIcon} 
-              alt="NihonAgent" 
-              className="nav-icon" />
-          </button>
-          <span className="icon-label">NihonAgent</span>
-        </div>
-        <div className="icon-wrapper">
-          <button className="icon-btn">
-            <img 
-              src={CodeExplorerIcon} 
-              alt="CodeExplorer" 
-              className="nav-icon" />
-          </button>
-          <span className="icon-label">CodeExplorer</span>
-        </div>
+        {leftIcons.map((icon, idx) => (
+          <IconButton key={idx} {...icon} />
+        ))}
       </div>
 
-      {/* Center section: logo + site name */}
+      {/* Center section */}
       <div className="nav-center">
         <span className="nav-title">AgenticBase</span>
       </div>
 
-      {/* Right section: settings, help, profile*/}
+      {/* Right section */}
       <div className="nav-right">
-        <div className="icon-wrapper">
-          <button className="icon-btn">
-            <img 
-              src={SettingsIcon} 
-              alt="Settings" 
-              className="nav-icon" />
-          </button>
-          <span className="icon-label">Settings</span>
-        </div>
-        <div className="icon-wrapper">
-          <button className="icon-btn">
-            <img 
-              src={ProfileIcon} 
-              alt="Profile" 
-              className="nav-icon" />
-          </button>
-          <span className="icon-label">Profile</span>
-        </div>
-        <div className="icon-wrapper">
-          <button className="icon-btn">
-            <img 
-              src={HelpIcon} 
-              alt="Help/About" 
-              className="nav-icon" />
-          </button>
-          <span className="icon-label">Help</span>
-        </div>
+        {rightIcons.map((icon, idx) => (
+          <IconButton key={idx} {...icon} />
+        ))}
       </div>
     </nav>
   );
