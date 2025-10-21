@@ -6,10 +6,10 @@
   flex-direction:row;
   justify-content: space-between;
   align-items: center;
-  background-color: rgba(255,255,255,1);
   height: 75px;
   border: none;
   padding-bottom: 3px;
+  padding: 0 12px;
   font-family: 'Segoe UI', ui-sans-serif;
 }
 .nav-left {
@@ -64,7 +64,7 @@
 .icon-label {
   font-size: 12px; 
   font-weight: bold;
-  color: #a08605c1; 
+  color: #3a393f; 
   font-weight: 500;
 }
 

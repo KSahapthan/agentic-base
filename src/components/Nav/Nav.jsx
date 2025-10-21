@@ -39,12 +39,6 @@ const Nav = () => {
           <IconButton key={idx} {...icon} />
         ))}
       </div>
-
-      {/* Center section */}
-      <div className="nav-center">
-        <span className="nav-title">AgenticBase</span>
-      </div>
-
       {/* Right section */}
       <div className="nav-right">
         {rightIcons.map((icon, idx) => (
