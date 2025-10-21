@@ -22,6 +22,7 @@
   height: 0;
 }
 
+
 /* Hero Section */
 .hero-section {
   display: flex;
@@ -95,6 +96,7 @@
   flex-wrap: wrap; 
   gap: 2rem;
   margin: 15px 0;
+  flex: 0 0 auto;
 }
 
 .product-card {
@@ -162,15 +164,16 @@
 
 /* Footer */
 .home-footer {
-  margin-top: 30px;
-  padding: 10px 0;
   font-size: 14px;
   color: #3a393f;
   text-align: center;
+  /* stick to bottom naturally */
+  flex: 0 0 auto;
 }
+   
 
 .home-footer a {
-  color: #a08605c1;
+  color: #322f21c1;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
