@@ -6,22 +6,3 @@ body {
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
 }
-
-/* Code-specific font for code inside <code> tag in HTML*/
-/* Styling for inline code blocks */
-code {
-  font-family: Consolas, "Courier New", monospace;
-  font-size: 0.9em;
-  padding: 2px 4px;
-  background-color: #f7f7f7; 
-  border-radius: 3px;
-  color: #c7254e; 
-}
-/* Styling for full code blocks */
-pre {
-  background-color: #2d2d2d; 
-  color: #cccccc; 
-  padding: 15px;
-  border-radius: 5px;
-  overflow-x: auto; 
-}

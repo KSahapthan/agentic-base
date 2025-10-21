@@ -10,6 +10,7 @@
   height: 75px;
   border: none;
   padding-bottom: 3px;
+  font-family: 'Segoe UI', ui-sans-serif;
 }
 .nav-left {
   display: flex;
