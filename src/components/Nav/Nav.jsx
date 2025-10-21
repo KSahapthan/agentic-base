@@ -5,6 +5,7 @@ import CodeExplorerIcon from '../../assets/CodeExplorer-button-1.png';
 import NihonAgentIcon from '../../assets/NihonAgent-button-1.png';
 import SettingsIcon from '../../assets/settings-1.png';
 import HelpIcon from '../../assets/help-1.png';
+import ProfileIcon from '../../assets/profile-1.png';
 
 const Nav = () => {
   return (
@@ -50,11 +51,20 @@ const Nav = () => {
         <div className="icon-wrapper">
           <button className="icon-btn">
             <img 
+              src={ProfileIcon} 
+              alt="Profile" 
+              className="nav-icon" />
+          </button>
+          <span className="icon-label">Profile</span>
+        </div>
+        <div className="icon-wrapper">
+          <button className="icon-btn">
+            <img 
               src={HelpIcon} 
               alt="Help/About" 
               className="nav-icon" />
           </button>
-          <span className="icon-label">Profile</span>
+          <span className="icon-label">Help</span>
         </div>
       </div>
     </nav>

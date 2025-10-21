@@ -13,28 +13,35 @@
 }
 .nav-left {
   display: flex;
+  flex: 1;
+  justify-content: flex-start;
   align-items: center;
   gap: 8px;
   margin-left: 12px;
   margin-top: 12px;
 }
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
 .nav-right {
   display: flex;
+  flex: 1;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
   margin-top: 12px;
   margin-right: 12px;
 }
+.nav-center {
+  display: flex;
+  flex: 0;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
 
 /* Center logo + text */
 .nav-title {
   font-style: normal; 
-  font-size: 32px;
+  font-size: 46px;
   color: #3a393f; 
 }
 
