@@ -1,0 +1,58 @@
+/* src/pages/Home.css */
+
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 75px); /* full viewport minus nav bar */
+  background: linear-gradient(135deg, #f5f0e6, #ffe4b3); /* subtle zen colors */
+  text-align: center;
+  padding: 20px;
+}
+
+.hero-section {
+  max-width: 800px;
+}
+
+.hero-title {
+  font-size: 56px;
+  color: #3a393f;
+  margin-bottom: 20px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: #5a4f3c;
+  margin-bottom: 40px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cta-btn {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #a08605c1;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.cta-btn:hover {
+  background-color: #8c6c04;
+}
+
+.cta-btn.secondary {
+  background-color: #3a393f;
+}
+
+.cta-btn.secondary:hover {
+  background-color: #292728;
+}
