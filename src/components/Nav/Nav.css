@@ -11,6 +11,7 @@
   padding-bottom: 3px;
   padding: 0 12px;
   font-family: 'Segoe UI', ui-sans-serif;
+  background: linear-gradient(135deg, #f4e3c5, #f6d499); 
 }
 .nav-left {
   display: flex;
@@ -50,11 +51,14 @@
 .icon-btn {
   background: none;
   border: none;
+  border-radius: 200px;
+  border-color: none;
 }
 .nav-icon {
   height: 38px;
   width: 38px;
   cursor: pointer;
+  background: linear-gradient(135deg, #f5f0e6, #ffe4b3); 
 }
 .icon-wrapper {
   display: flex;
