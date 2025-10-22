@@ -23,10 +23,10 @@ class SkillInfo(BaseModel):
     skill_id: str
     name: str
 
-from ...utils import init_learning_folders, get_all_skills, set_current_skill
+from ...utils import init_learning_folders, set_current_skill
 
 # Initialize learning folders and get paths
-paths = init_learning_folders()
+paths = init_learning_folders(3)
 MM_LEARNING_ROOT = paths["MM_LEARNING_ROOT"]
 LEARNING_SKILLS_PATH = paths["LEARNING_SKILLS_PATH"]
 GLOBAL_STATS_PATH = paths["GLOBAL_STATS_PATH"]
@@ -59,6 +59,7 @@ def create_skill_plan(request: CreateSkillPlanRequest):
         skill_id = f"skill_{new_skill_number:03d}"
         skill_folder = LEARNING_SKILLS_PATH / skill_id
         skill_folder.mkdir(exist_ok=True)
+        print(f"Created skill folder: {skill_folder}")
 
         # --- Save plan_config.json with mastery fields ---
         plan_dict = plan_output.model_dump()
