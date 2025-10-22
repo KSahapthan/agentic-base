@@ -2,13 +2,13 @@
 import React from 'react';
 import './Home.css';
 import ProductCard from './ProductCard';
-import NihonAgentText from '../../assets/display-text/NA.md?raw';
+import MentorMindText from '../../assets/display-text/MM.md?raw';
 import CodeExplorerText from '../../assets/display-text/CE.md?raw';
 
 const products = [
   {
-    title: 'NihonAgent',
-    description: NihonAgentText
+    title: 'MentorMind',
+    description: MentorMindText
   },
   {
     title: 'CodeExplorer',

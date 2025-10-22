@@ -1,0 +1,1 @@
+Meet MentorMind, your AI-powered adaptive tutor—personalized, interactive, and perfectly synced with your learning pace. It intelligently crafts real-time exercises across diverse subjects and modalities, provides instant feedback, and meticulously tracks your progress towards mastery.

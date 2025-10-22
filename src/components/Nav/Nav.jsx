@@ -2,7 +2,7 @@
 import React from 'react';
 import './Nav.css';
 import CodeExplorerIcon from '../../assets/CodeExplorer-button-1.png';
-import NihonAgentIcon from '../../assets/NihonAgent-button-1.png';
+import MentorMindIcon from '../../assets/MentorMind-button-1.png';
 import SettingsIcon from '../../assets/settings-1.png';
 import HelpIcon from '../../assets/help-1.png';
 import ProfileIcon from '../../assets/profile-1.png';
@@ -20,7 +20,7 @@ const IconButton = ({ src, alt, label }) => (
 const Nav = () => {
   // Left section icons
   const leftIcons = [
-    { src: NihonAgentIcon, alt: 'NihonAgent', label: 'NihonAgent' },
+    { src: MentorMindIcon, alt: 'MentorMind', label: 'MentorMind' },
     { src: CodeExplorerIcon, alt: 'CodeExplorer', label: 'CodeExplorer' },
   ];
 
