@@ -20,6 +20,11 @@ const MentorMind = () => {
   const [quizData, setQuizData] = useState(null);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [showContinueButton, setShowContinueButton] = useState(false);
+  
+  // Topic and subtopic tracking
+  const [currentSubtopicIndex, setCurrentSubtopicIndex] = useState(0);
+  const [currentTopicData, setCurrentTopicData] = useState(null);
+  const [allSubtopics, setAllSubtopics] = useState([]);
 
   // Load saved skill ID on mount (only once)
   useEffect(() => {
@@ -106,6 +111,29 @@ const MentorMind = () => {
     textarea.style.height = textarea.scrollHeight + 'px';
   };
 
+  // Load topic data and subtopics
+  const loadTopicData = async () => {
+    if (!currentSkillId) return;
+    
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
+      const skillInfo = response.data;
+      
+      // Load the plan config to get subtopics
+      const planResponse = await axios.get(`http://127.0.0.1:8000/plan/get-topic-data/${currentSkillId}/${skillInfo.current_topic_id}`);
+      const topicData = planResponse.data;
+      
+      setCurrentTopicData(topicData);
+      setAllSubtopics(topicData.subtopics || []);
+      setCurrentSubtopicIndex(0);
+      
+      return topicData;
+    } catch (error) {
+      console.error('Error loading topic data:', error);
+      return null;
+    }
+  };
+
   // Quiz functionality
   const startLearning = async () => {
     if (!currentSkillId || !skillDetails) return;
@@ -114,12 +142,23 @@ const MentorMind = () => {
     setShowContinueButton(false);
     
     try {
-      // Generate quiz for current topic
+      // Load topic data first
+      const topicData = await loadTopicData();
+      if (!topicData || !topicData.subtopics || topicData.subtopics.length === 0) {
+        alert('No subtopics found for this topic. Please check your learning plan.');
+        return;
+      }
+      
+      // Start with first subtopic
+      const firstSubtopic = topicData.subtopics[0];
+      setCurrentSubtopicIndex(0);
+      
+      // Generate quiz for first subtopic
       const response = await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
         skill_id: currentSkillId,
         topic_id: skillDetails.current_topic_id,
-        subtopic_name: skillDetails.current_topic,
-        subtopic_description: `Learning about ${skillDetails.current_topic}`,
+        subtopic_name: firstSubtopic.name,
+        subtopic_description: firstSubtopic.description || `Learning about ${firstSubtopic.name}`,
         focus_areas: ['understanding', 'application'],
         user_context: 'Interactive learning session',
         current_mastery: 50
@@ -172,16 +211,51 @@ const MentorMind = () => {
     }
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (currentQuestionNumber < 5) {
+      // Move to next question in current subtopic
       const nextNumber = currentQuestionNumber + 1;
       setCurrentQuestionNumber(nextNumber);
       loadQuestion(nextNumber);
     } else {
       // All questions completed for this subtopic
-      setQuizState('idle');
-      setShowContinueButton(true);
-      // TODO: Move to next subtopic or topic
+      const nextSubtopicIndex = currentSubtopicIndex + 1;
+      
+      if (nextSubtopicIndex < allSubtopics.length) {
+        // Move to next subtopic
+        setCurrentSubtopicIndex(nextSubtopicIndex);
+        const nextSubtopic = allSubtopics[nextSubtopicIndex];
+        
+        try {
+          // Generate quiz for next subtopic
+          const response = await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
+            skill_id: currentSkillId,
+            topic_id: skillDetails.current_topic_id,
+            subtopic_name: nextSubtopic.name,
+            subtopic_description: nextSubtopic.description || `Learning about ${nextSubtopic.name}`,
+            focus_areas: ['understanding', 'application'],
+            user_context: 'Interactive learning session',
+            current_mastery: 50
+          });
+          
+          setQuizData(response.data.quiz_data);
+          setCurrentQuestionNumber(1);
+          setQuizState('question');
+          setUserAnswer('');
+          setEvaluation(null);
+          setShowContinueButton(false);
+          loadQuestion(1);
+        } catch (error) {
+          console.error('Error generating quiz for next subtopic:', error);
+          alert(`Error moving to next subtopic: ${error.response?.data?.detail || error.message}`);
+        }
+      } else {
+        // All subtopics completed for this topic
+        setQuizState('idle');
+        setShowContinueButton(false);
+        alert('🎉 Congratulations! You have completed all subtopics for this topic. Great job!');
+        // TODO: Move to next topic in the learning plan
+      }
     }
   };
 
@@ -285,6 +359,11 @@ const MentorMind = () => {
                 {currentQuestion && (
                   <div>
                     <h3>Question {currentQuestionNumber}/5</h3>
+                    {allSubtopics.length > 0 && (
+                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>
+                        Subtopic {currentSubtopicIndex + 1}/{allSubtopics.length}: {allSubtopics[currentSubtopicIndex]?.name}
+                      </p>
+                    )}
                     <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
                       {currentQuestion.Q}
                     </p>
@@ -344,18 +423,21 @@ const MentorMind = () => {
               <div style={{ textAlign: 'center', marginTop: '16px' }}>
                 <button
                   onClick={nextQuestion}
+                  disabled={quizState === 'question'}  // Disable if still on question
                   style={{
-                    backgroundColor: '#4CAF50',
+                    backgroundColor: quizState === 'question' ? '#ccc' : '#4CAF50',
                     color: 'white',
                     border: 'none',
                     padding: '12px 24px',
                     borderRadius: '8px',
-                    cursor: 'pointer',
+                    cursor: quizState === 'question' ? 'not-allowed' : 'pointer',
                     fontSize: '16px',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    opacity: quizState === 'question' ? 0.6 : 1
                   }}
                 >
-                  {currentQuestionNumber < 5 ? 'Next Question →' : 'Complete Subtopic →'}
+                  {currentQuestionNumber < 5 ? 'Next Question →' : 
+                   (currentSubtopicIndex + 1 < allSubtopics.length ? 'Next Subtopic →' : 'Complete Topic →')}
                 </button>
               </div>
             )}

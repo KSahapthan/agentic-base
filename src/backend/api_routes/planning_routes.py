@@ -123,6 +123,31 @@ def get_skill_info(skill_id: str):
     details = get_current_topic_name(LEARNING_SKILLS_PATH, SKILLS_METADATA_PATH, skill_id)
     return details
 
+@router.get("/get-topic-data/{skill_id}/{topic_id}")
+def get_topic_data(skill_id: str, topic_id: str):
+    """Get topic data including subtopics from plan_config.json."""
+    try:
+        skill_folder = LEARNING_SKILLS_PATH / skill_id
+        plan_config_path = skill_folder / "plan_config.json"
+        
+        if not plan_config_path.exists():
+            raise HTTPException(status_code=404, detail="Plan config not found for this skill.")
+        
+        plan_config = json.loads(plan_config_path.read_text(encoding="utf-8"))
+        
+        # Find the topic by topic_id
+        topic = next((t for t in plan_config["topics"] if t["topic_id"] == topic_id), None)
+        if not topic:
+            raise HTTPException(status_code=404, detail=f"Topic {topic_id} not found.")
+        
+        return {
+            "status": "success",
+            "topic": topic,
+            "subtopics": topic.get("subtopics", [])
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 def get_current_topic_name(learning_skills_path: Path, metadata_path: Path, skill_id: str) -> dict:
     """Get the current topic name and skill name for a given skill."""
     try:
