@@ -23,10 +23,10 @@ class SkillInfo(BaseModel):
     skill_id: str
     name: str
 
-from ...utils import init_learning_folders, set_current_skill
+from .utils import init_learning_folders, set_current_skill
 
 # Initialize learning folders and get paths
-paths = init_learning_folders(3)
+paths = init_learning_folders(4)
 MM_LEARNING_ROOT = paths["MM_LEARNING_ROOT"]
 LEARNING_SKILLS_PATH = paths["LEARNING_SKILLS_PATH"]
 GLOBAL_STATS_PATH = paths["GLOBAL_STATS_PATH"]
