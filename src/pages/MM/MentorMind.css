@@ -23,17 +23,14 @@
   padding: 8px 6px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: #c1a45f transparent;
+  /* Hide scrollbars while keeping scrollability */
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .mentormind-panel::-webkit-scrollbar {
-  width: 6px;
-}
-.mentormind-panel::-webkit-scrollbar-thumb {
-  background-color: #c1a45f;
-  border-radius: 10px;
+  display: none;  /* Webkit browsers (Chrome, Safari, Edge) */
 }
 .mentormind-panel:hover {
   transform: translateY(-3px);
@@ -129,4 +126,99 @@
 .current-skill-info .skill-name,
 .current-skill-info .topic-name {
   color: #444;
+}
+
+/* Chat boxes in left panel */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.chat-input-box {
+  background: rgba(255, 248, 240, 0.9);
+  border: 2px solid #e8d5b7;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 60px;  /* Reduced from 80px */
+  max-height: 150px;  /* Reduced from 200px */
+  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  /* Auto-resize based on content */
+  resize: vertical;
+}
+
+.chat-input-box:focus-within {
+  border-color: #c1a45f;
+  box-shadow: 0 4px 12px rgba(193, 164, 95, 0.2);
+  transform: translateY(-1px);
+}
+
+.chat-input-box textarea {
+  width: 100%;
+  min-height: 100%;
+  border: none;
+  background: transparent;
+  resize: none;  /* To revert: change to 'vertical' to allow manual resizing */
+  outline: none;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #3a393f;
+  line-height: 1.5;
+  /* Auto-expand textarea */
+  overflow-y: hidden;  /* To revert: change to 'auto' to show scrollbar */
+}
+
+.chat-input-box textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.chat-response-box {
+  background: rgba(255, 248, 240, 0.9);
+  border: 2px solid #e8d5b7;
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 80px;  /* Reduced from 120px */
+  max-height: 250px;  /* Reduced from 300px */
+  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  /* Auto-resize based on content */
+  resize: vertical;
+}
+
+.chat-response-box:hover {
+  border-color: #c1a45f;
+  box-shadow: 0 4px 12px rgba(193, 164, 95, 0.15);
+}
+
+.chat-response-content {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  color: #3a393f;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.chat-response-content:empty::before {
+  content: "AI tutor responses will appear here...";
+  color: #999;
+  font-style: italic;
+}
+
+/* Hide scrollbars for chat boxes while keeping scrollability */
+.chat-input-box::-webkit-scrollbar,
+.chat-response-box::-webkit-scrollbar {
+  display: none;
+}
+
+.chat-input-box,
+.chat-response-box {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }

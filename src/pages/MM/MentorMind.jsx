@@ -8,6 +8,9 @@ const MentorMind = () => {
   const [currentSkillId, setCurrentSkillId] = useState(null);
   const [skillDetails, setSkillDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userQuery, setUserQuery] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [isLoadingResponse, setIsLoadingResponse] = useState(false);
 
   // Load saved skill ID on mount (only once)
   useEffect(() => {
@@ -58,6 +61,42 @@ const MentorMind = () => {
     console.log('Current skill ID changed to:', currentSkillId);
   }, [currentSkillId]);
 
+  // Handle chat submission
+  const handleChatSubmit = async () => {
+    if (!userQuery.trim()) return;
+    
+    setIsLoadingResponse(true);
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/chat/ask', {
+        user_query: userQuery,
+        skill_id: currentSkillId
+      });
+      setAiResponse(response.data.response);
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      setAiResponse('Sorry, I encountered an error. Please try again.');
+    } finally {
+      setIsLoadingResponse(false);
+    }
+  };
+
+  // Handle Enter key press in textarea
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleChatSubmit();
+    }
+  };
+
+  // Auto-resize textarea based on content
+  const handleTextareaChange = (e) => {
+    setUserQuery(e.target.value);
+    // Auto-resize textarea
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  };
+
   if (isLoading) {
     return (
       <div className="mentormind-container loading">
@@ -75,8 +114,26 @@ const MentorMind = () => {
           onSkillSelect={handleSkillChange}
           currentSkillId={currentSkillId}
         />
-        <div className="panel-content">
-          <p>Ask questions or get hints from the AI tutor here</p>
+        
+        {/* Chat Container */}
+        <div className="chat-container">
+          {/* Input Box */}
+          <div className="chat-input-box">
+            <textarea
+              value={userQuery}
+              onChange={handleTextareaChange}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask questions or get hints from the AI tutor here"
+              disabled={isLoadingResponse}
+            />
+          </div>
+          
+          {/* Response Box */}
+          <div className="chat-response-box">
+            <div className="chat-response-content">
+              {isLoadingResponse ? 'AI tutor is thinking...' : aiResponse}
+            </div>
+          </div>
         </div>
       </div>
 
