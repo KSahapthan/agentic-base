@@ -78,6 +78,17 @@
   background: rgba(255, 255, 255, 0.88);
 }
 
+/* Width proportions for each panel */
+.left-panel {
+  flex: 0.5;
+}
+.middle-panel {
+  flex: 1;
+}
+.right-panel {
+  flex: 0.5;
+}
+
 /* Responsive layout (stack panels vertically) */
 @media (max-width: 900px) {
   .mindmaster-container {
