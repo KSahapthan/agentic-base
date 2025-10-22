@@ -1,4 +1,4 @@
-# src/backend/agents/planning_agent.py
+# src/backend/MMagents/planning_agent.py
 from .base_agent import BaseAgent
 from .schemas.PA_schemas import PlanOutput
 from google import genai

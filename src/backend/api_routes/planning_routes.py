@@ -156,12 +156,5 @@ def get_current_topic_name(learning_skills_path: Path, metadata_path: Path, skil
             "current_topic_id": "Error loading topic ID"
         }
 
-# @router.post("/set-current-skill")
-# def update_current_skill(skill_id: str):
-#     """Set the current active skill."""
-#     success = set_current_skill(GLOBAL_STATS_PATH, skill_id)
-#     if not success:
-#         raise HTTPException(status_code=500, detail="Failed to set current skill")
-#     return {"status": "success", "current_skill_id": skill_id}
 
 

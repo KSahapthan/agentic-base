@@ -37,22 +37,6 @@ def init_learning_folders(n) -> Dict[str, Path]:
         "SKILLS_METADATA_PATH": SKILLS_METADATA_PATH
     }
 
-# def set_current_skill(global_stats_path: Path, skill_id: Optional[str]) -> bool:
-#     """Update the current skill ID in global stats file.
-    
-#     Args:
-#         global_stats_path: Path to the global_stats.json file
-#         skill_id: ID of the skill to set as current, or None to clear
-#     """
-#     try:
-#         stats = json.loads(global_stats_path.read_text(encoding="utf-8"))
-#         stats["current_skill_id"] = skill_id
-#         global_stats_path.write_text(json.dumps(stats, indent=2), encoding="utf-8")
-#         return True
-#     except Exception as e:
-#         print(f"Error setting current skill: {e}")
-#         return False
-
 def get_all_skills(metadata_path: Path) -> List[Dict[str, str]]:
     """Get all available skills from the metadata file with mastery calculation."""
     try:
