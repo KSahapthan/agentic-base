@@ -8,6 +8,7 @@ from ..MMagents.planning_agent import PlanningAgent
 from ..MMagents.schemas.PA_schemas import PlanOutput
 from pydantic import BaseModel
 from datetime import datetime
+from typing import List
 
 load_dotenv()
 router = APIRouter()
@@ -18,17 +19,19 @@ class CreateSkillPlanRequest(BaseModel):
     # e.g., difficulty, current mastery, learning style
     user_context: str  
 
-# --- Paths ---
-BASE_DIR = Path(__file__).resolve().parents[4]
-MM_LEARNING_ROOT = BASE_DIR / "MMagent_learning"
-USER_PROFILE_PATH = MM_LEARNING_ROOT / "user_profile.json"
-GLOBAL_STATS_PATH = MM_LEARNING_ROOT / "global_stats.json"
-LEARNING_SKILLS_PATH = MM_LEARNING_ROOT / "learning_skills"
-SKILLS_METADATA_PATH = LEARNING_SKILLS_PATH / "skills_metadata.json"
+# Add response model for skills
+class SkillInfo(BaseModel):
+    skill_id: str
+    name: str
 
-# Ensure folders exist
-MM_LEARNING_ROOT.mkdir(exist_ok=True)
-LEARNING_SKILLS_PATH.mkdir(exist_ok=True)
+from ...utils import init_learning_folders, get_all_skills, set_current_skill
+
+# Initialize learning folders and get paths
+paths = init_learning_folders()
+MM_LEARNING_ROOT = paths["MM_LEARNING_ROOT"]
+LEARNING_SKILLS_PATH = paths["LEARNING_SKILLS_PATH"]
+GLOBAL_STATS_PATH = paths["GLOBAL_STATS_PATH"]
+SKILLS_METADATA_PATH = paths["SKILLS_METADATA_PATH"]
 
 @router.post("/create-skill-plan")
 def create_skill_plan(request: CreateSkillPlanRequest):
@@ -36,11 +39,6 @@ def create_skill_plan(request: CreateSkillPlanRequest):
     try:
         skill_name = request.skill_name.strip()
         user_context = request.user_context.strip()
-
-        # --- Load user profile ---
-        if not USER_PROFILE_PATH.exists():
-            raise HTTPException(status_code=400, detail="User profile not found.")
-        user_profile = USER_PROFILE_PATH.read_text(encoding="utf-8")
 
         # --- Initialize PlanningAgent ---
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
@@ -51,20 +49,25 @@ def create_skill_plan(request: CreateSkillPlanRequest):
         # --- Generate plan ---
         plan_output: PlanOutput = agent.run(skill=skill_name, context=user_context)
 
-        # --- Determine new skill folder ID ---
+        # --- Load or initialize metadata ---
         if SKILLS_METADATA_PATH.exists():
             metadata = json.loads(SKILLS_METADATA_PATH.read_text(encoding="utf-8"))
         else:
-            metadata = {"total_skills": 0, "active_skill_id": None, "skills": []}
+            metadata = {"total_skills": 0, "skills": []}
 
+        # --- Create new skill folder ---
         new_skill_number = metadata["total_skills"] + 1
         skill_id = f"skill_{new_skill_number:03d}"
         skill_folder = LEARNING_SKILLS_PATH / skill_id
         skill_folder.mkdir(exist_ok=True)
 
-        # --- Save plan_config.json ---
+        # --- Save plan_config.json with mastery fields ---
+        plan_dict = plan_output.model_dump()
+        for topic in plan_dict["topics"]:
+            topic["mastery"] = 0  # Initialize mastery for each topic
+        
         plan_config_path = skill_folder / "plan_config.json"
-        plan_config_path.write_text(plan_output.model_dump_json(indent=2), encoding="utf-8")
+        plan_config_path.write_text(json.dumps(plan_dict, indent=2), encoding="utf-8")
 
         # --- Initialize progress.json ---
         progress_path = skill_folder / "progress.json"
@@ -72,40 +75,44 @@ def create_skill_plan(request: CreateSkillPlanRequest):
 
         # --- Update skills_metadata.json ---
         metadata["total_skills"] = new_skill_number
-        metadata["active_skill_id"] = skill_id
         metadata["skills"].append({
             "id": skill_id,
             "name": skill_name,
             "created_at": datetime.now().isoformat(),
-            "topic_count": len(plan_output.topics)
+            "topic_count": len(plan_output.topics),
+            "status": "active"
         })
         SKILLS_METADATA_PATH.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
-        return {"status": "success", "skill_id": skill_id, "topic_count": len(plan_output.topics)}
+        return {
+            "status": "success", 
+            "skill_id": skill_id, 
+            "topic_count": len(plan_output.topics),
+            "is_active": True
+        }
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/all-skills", response_model=List[SkillInfo])
+def get_all_skills():
+    """Get all available skills."""
+    try:
+        metadata = json.loads(SKILLS_METADATA_PATH.read_text(encoding="utf-8"))
+        return [
+            SkillInfo(skill_id=skill["id"], name=skill["name"])
+            for skill in metadata["skills"]
+        ]
+    except Exception as e:
+        print(f"Debug error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch skills: {str(e)}")
 
-@router.get("/current-skill-plan")
-def get_current_skill_plan():
-    """Return the active skill plan and ensure all topics have 'mastery' field."""
-    if not SKILLS_METADATA_PATH.exists():
-        raise HTTPException(status_code=404, detail="No skills metadata found.")
-    
-    metadata = json.loads(SKILLS_METADATA_PATH.read_text(encoding="utf-8"))
-    current_skill_id = metadata.get("active_skill_id")
-    if not current_skill_id:
-        raise HTTPException(status_code=404, detail="No active skill plan found.")
+@router.post("/set-current-skill")
+def update_current_skill(skill_id: str):
+    """Set the current active skill."""
+    success = set_current_skill(skill_id)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to set current skill")
+    return {"status": "success", "current_skill_id": skill_id}
 
-    skill_folder = LEARNING_SKILLS_PATH / current_skill_id
-    plan_config_path = skill_folder / "plan_config.json"
-    if not plan_config_path.exists():
-        raise HTTPException(status_code=404, detail="Plan config not found.")
 
-    plan_config = json.loads(plan_config_path.read_text(encoding="utf-8"))
-    for topic in plan_config.get("topics", []):
-        if "mastery" not in topic:
-            topic["mastery"] = 0
-
-    return {"skill_id": current_skill_id, "topics": plan_config["topics"]}

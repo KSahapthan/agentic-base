@@ -5,7 +5,8 @@ from google import genai
 from google.genai import types
 from pathlib import Path
 
-SYSTEM_PROMPT = Path("./system_instructions/PA.md").read_text(encoding="utf-8")
+CURRENT_DIR = Path(__file__).resolve().parent
+SYSTEM_PROMPT = (CURRENT_DIR / "system_instructions" / "PA.md").read_text(encoding="utf-8")
 
 class PlanningAgent(BaseAgent):
     def __init__(self, api_key: str, name: str = "PlanningAgent"):
