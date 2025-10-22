@@ -67,6 +67,7 @@ const ModalContinueSkill = ({ onClose, onSkillSelect, currentSkillId }) => {
             <tr>
               <th>Skill Name</th>
               <th>ID</th>
+              <th>Mastery</th>
             </tr>
           </thead>
           <tbody>
@@ -78,6 +79,7 @@ const ModalContinueSkill = ({ onClose, onSkillSelect, currentSkillId }) => {
               >
                 <td>{skill.name}</td>
                 <td>{skill.skill_id}</td>
+                <td>{skill.mastery}%</td>
               </tr>
             ))}
           </tbody>

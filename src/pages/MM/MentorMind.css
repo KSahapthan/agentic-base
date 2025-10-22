@@ -101,3 +101,31 @@
     min-height: 300px;
   }
 }
+
+.current-skill-info {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  color: #666;
+  border-bottom: 1px solid #eee;
+  background-color: #f9f9f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.current-skill-info .separator {
+  margin: 0 8px;
+  color: #999;
+}
+
+.current-skill-info .skill-id,
+.current-skill-info .topic-id {
+  color: #888;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.current-skill-info .skill-name,
+.current-skill-info .topic-name {
+  color: #444;
+}

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ActionButtons from '../../components/MentorMind/ActionButtons';
 import './MentorMind.css';
 
 // define a functional React component
 const MentorMind = () => {
   const [currentSkillId, setCurrentSkillId] = useState(null);
+  const [skillDetails, setSkillDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load saved skill ID on mount (only once)
@@ -15,6 +17,29 @@ const MentorMind = () => {
     }
     setIsLoading(false);
   }, []);
+
+  // Fetch current topic when skill changes
+  useEffect(() => {
+    if (!currentSkillId) {
+      setSkillDetails(null);
+      return;
+    }
+
+    const fetchCurrentTopic = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
+        setSkillDetails(response.data);
+      } catch (err) {
+        console.error('Error fetching current topic:', err);
+        setSkillDetails({
+          skill_name: 'Error loading skill',
+          current_topic: 'Error loading topic',
+          current_topic_id: 'Error loading topic ID'
+        });
+      }
+    };
+    fetchCurrentTopic();
+  }, [currentSkillId]);
 
   // Handler to update skill ID
   const handleSkillChange = (skillId) => {
@@ -58,12 +83,20 @@ const MentorMind = () => {
       {/* Middle Section — Learn / Quiz */}
       <div className="mentormind-panel middle-panel">
         <h2 className="panel-title">Learn (or) Quiz</h2>
+        {currentSkillId && skillDetails && (
+          <div className="current-skill-info">
+            <span className="skill-id">{currentSkillId}</span>
+            <span className="separator">•</span>
+            <span className="skill-name">{skillDetails.skill_name}</span>
+            <span className="separator">•</span>
+            <span className="topic-id">{skillDetails.current_topic_id}</span>
+            <span className="separator">•</span>
+            <span className="topic-name">{skillDetails.current_topic}</span>
+          </div>
+        )}
         <div className="panel-content">
           {currentSkillId ? (
-            <div>
-              <h3>Current Skill: {currentSkillId}</h3>
-              <p>The interactive quizzing would be displayed here upon selection of a skill</p>
-            </div>
+            <p>The interactive quizzing would be displayed here upon selection of a skill</p>
           ) : (
             <p>Select an existing skill or create a skill to start learning</p>
           )}

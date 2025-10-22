@@ -37,14 +37,74 @@ def init_learning_folders(n) -> Dict[str, Path]:
         "SKILLS_METADATA_PATH": SKILLS_METADATA_PATH
     }
 
-def set_current_skill(skill_id: Optional[str]) -> bool:
-    """Update the current skill ID in global stats"""
-    paths = init_learning_folders()
+# def set_current_skill(global_stats_path: Path, skill_id: Optional[str]) -> bool:
+#     """Update the current skill ID in global stats file.
+    
+#     Args:
+#         global_stats_path: Path to the global_stats.json file
+#         skill_id: ID of the skill to set as current, or None to clear
+#     """
+#     try:
+#         stats = json.loads(global_stats_path.read_text(encoding="utf-8"))
+#         stats["current_skill_id"] = skill_id
+#         global_stats_path.write_text(json.dumps(stats, indent=2), encoding="utf-8")
+#         return True
+#     except Exception as e:
+#         print(f"Error setting current skill: {e}")
+#         return False
+
+def get_all_skills(metadata_path: Path) -> List[Dict[str, str]]:
+    """Get all available skills from the metadata file with mastery calculation."""
     try:
-        stats = json.loads(paths["GLOBAL_STATS_PATH"].read_text(encoding="utf-8"))
-        stats["current_skill_id"] = skill_id
-        paths["GLOBAL_STATS_PATH"].write_text(json.dumps(stats, indent=2), encoding="utf-8")
-        return True
+        # Get base directory from metadata path
+        base_dir = metadata_path.parent
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        skills_list = []
+        for skill in metadata["skills"]:
+            # Read plan_config.json for this skill
+            skill_folder = base_dir / "learning_skills" / skill["id"]
+            plan_config = json.loads((skill_folder / "plan_config.json").read_text(encoding="utf-8"))
+            # Calculate average mastery
+            total_mastery = sum(topic.get("mastery", 0) for topic in plan_config["topics"])
+            avg_mastery = round(total_mastery / len(plan_config["topics"]), 1) if plan_config["topics"] else 0
+            skills_list.append({
+                "skill_id": skill["id"],
+                "name": skill["name"],
+                "mastery": avg_mastery
+            })
+        return skills_list
     except Exception as e:
-        print(f"Error setting current skill: {e}")
-        return False
+        print(f"Debug error: {str(e)}")
+        raise Exception(f"Failed to fetch skills: {str(e)}")
+
+def get_current_topic_name(learning_skills_path: Path, metadata_path: Path, skill_id: str) -> dict:
+    """Get the current topic name and skill name for a given skill."""
+    try:
+        # Read metadata to get skill name
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        skill = next((s for s in metadata["skills"] if s["id"] == skill_id), None)
+        skill_name = skill["name"] if skill else "Unknown Skill"
+        # Read plan config
+        plan_config = json.loads(
+            (learning_skills_path / skill_id / "plan_config.json").read_text(encoding="utf-8")
+        )
+        # Get current topic ID and name
+        current_topic_id = plan_config["current_topic_id"]
+        current_topic = next(
+            ({"name": topic["name"], "topic_id": topic["topic_id"]} 
+             for topic in plan_config["topics"] 
+             if topic["topic_id"] == current_topic_id),
+            {"name": "No topic found", "topic_id": "none"}
+        )
+        return {
+            "skill_name": skill_name,
+            "current_topic": current_topic["name"],
+            "current_topic_id": current_topic_id
+        }
+    except Exception as e:
+        print(f"Error getting current topic: {e}")
+        return {
+            "skill_name": "Error loading skill",
+            "current_topic": "Error loading topic",
+            "current_topic_id": "error"
+        }
