@@ -18,4 +18,4 @@ class QuizInput(BaseModel):
 
 class QuizOutput(BaseModel):
     """Output schema containing 5 quiz questions"""
-    questions: Dict[str, QuizQuestion]  # Keys are "1" through "5"
+    questions: List[QuizQuestion]  # List of 5 questions

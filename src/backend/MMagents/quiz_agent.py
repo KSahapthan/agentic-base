@@ -1,4 +1,4 @@
-# src/backend/MMagents/chat_agent.py
+# src/backend/MMagents/quiz_agent.py
 from .base_agent import BaseAgent
 from .schemas.QA_schemas import QuizInput, QuizOutput
 from google import genai

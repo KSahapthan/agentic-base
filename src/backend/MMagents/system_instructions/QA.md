@@ -30,11 +30,15 @@ GUIDELINES FOR QUESTIONS:
 - Include practical applications where relevant
 # This is o/p structure
 OUTPUT STRUCTURE:
-Generate exactly 5 questions in JSON format:
+Generate exactly 5 questions in JSON format as a list:
 {
-  "1": {"Q": "question", "A": "brief answer", "E": "detailed explanation"},
-  "2": {...},
-  ...up to "5"
+  "questions": [
+    {"Q": "question", "A": "brief answer", "E": "detailed explanation"},
+    {"Q": "question", "A": "brief answer", "E": "detailed explanation"},
+    {"Q": "question", "A": "brief answer", "E": "detailed explanation"},
+    {"Q": "question", "A": "brief answer", "E": "detailed explanation"},
+    {"Q": "question", "A": "brief answer", "E": "detailed explanation"}
+  ]
 }
 # Always rememebr
 Remember:
