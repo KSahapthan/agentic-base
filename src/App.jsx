@@ -1,5 +1,5 @@
 // src/App.jsx
-import './App.css';
+// import './App.css';
 import Nav from './components/Nav/Nav';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './AppRoutes';

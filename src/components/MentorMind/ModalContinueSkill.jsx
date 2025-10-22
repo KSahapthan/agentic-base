@@ -24,7 +24,8 @@ const ModalContinueSkill = ({ onClose, onSkillSelect, currentSkillId }) => {
   }, []);
 
   const handleSelectSkill = (skillId) => {
-    console.log('Selected skill:', skillId); // Debug log
+    // Debug log
+    console.log('Selected skill:', skillId); 
     onSkillSelect(skillId);
     onClose();
   };

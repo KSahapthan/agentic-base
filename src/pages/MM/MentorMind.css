@@ -1,5 +1,5 @@
 /* Overall page container */
-.mindmaster-container {
+.mentormind-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -13,7 +13,7 @@
 }
 
 /* Shared panel styles */
-.mindmaster-panel {
+.mentormind-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -28,14 +28,14 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.mindmaster-panel::-webkit-scrollbar {
+.mentormind-panel::-webkit-scrollbar {
   width: 6px;
 }
-.mindmaster-panel::-webkit-scrollbar-thumb {
+.mentormind-panel::-webkit-scrollbar-thumb {
   background-color: #c1a45f;
   border-radius: 10px;
 }
-.mindmaster-panel:hover {
+.mentormind-panel:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
@@ -91,13 +91,13 @@
 
 /* Responsive layout (stack panels vertically) */
 @media (max-width: 900px) {
-  .mindmaster-container {
+  .mentormind-container {
     flex-direction: column;
     height: auto;
     overflow-y: auto;
   }
 
-  .mindmaster-panel {
+  .mentormind-panel {
     min-height: 300px;
   }
 }
