@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import ActionButtons from '../../components/MentorMind/ActionButtons';
 import './MentorMind.css';
 
@@ -299,11 +302,70 @@ const MentorMind = () => {
             />
           </div>
           
-          {/* Response Box */}
+          {/* Response Box - Now with Markdown rendering */}
           <div className="chat-response-box">
-            <div className="chat-response-content">
-              {isLoadingResponse ? 'AI tutor is thinking...' : aiResponse}
-            </div>
+            {isLoadingResponse ? (
+              'AI tutor is thinking...'
+            ) : (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  // Custom styling for different elements
+                  p: ({ children }) => <p style={{ margin: '0 0 12px 0', lineHeight: '1.6' }}>{children}</p>,
+                  h1: ({ children }) => <h1 style={{ fontSize: '1.4rem', margin: '0 0 16px 0', fontWeight: 'bold' }}>{children}</h1>,
+                  h2: ({ children }) => <h2 style={{ fontSize: '1.2rem', margin: '0 0 14px 0', fontWeight: 'bold' }}>{children}</h2>,
+                  h3: ({ children }) => <h3 style={{ fontSize: '1.1rem', margin: '0 0 12px 0', fontWeight: 'bold' }}>{children}</h3>,
+                  ul: ({ children }) => <ul style={{ margin: '0 0 12px 0', paddingLeft: '20px' }}>{children}</ul>,
+                  ol: ({ children }) => <ol style={{ margin: '0 0 12px 0', paddingLeft: '20px' }}>{children}</ol>,
+                  li: ({ children }) => <li style={{ margin: '4px 0' }}>{children}</li>,
+                  code: ({ children, className }) => {
+                    const isInline = !className;
+                    return isInline ? (
+                      <code style={{ 
+                        backgroundColor: '#f4f4f4', 
+                        padding: '2px 4px', 
+                        borderRadius: '3px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.9em'
+                      }}>
+                        {children}
+                      </code>
+                    ) : (
+                      <code className={className}>{children}</code>
+                    );
+                  },
+                  pre: ({ children }) => (
+                    <pre style={{ 
+                      backgroundColor: '#f4f4f4', 
+                      padding: '12px', 
+                      borderRadius: '6px',
+                      overflow: 'auto',
+                      margin: '0 0 12px 0',
+                      fontSize: '0.9em',
+                      lineHeight: '1.4'
+                    }}>
+                      {children}
+                    </pre>
+                  ),
+                  blockquote: ({ children }) => (
+                    <blockquote style={{ 
+                      borderLeft: '4px solid #c1a45f', 
+                      paddingLeft: '12px', 
+                      margin: '0 0 12px 0',
+                      fontStyle: 'italic',
+                      color: '#666'
+                    }}>
+                      {children}
+                    </blockquote>
+                  ),
+                  strong: ({ children }) => <strong style={{ fontWeight: 'bold', color: '#3a393f' }}>{children}</strong>,
+                  em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>
+                }}
+              >
+                {aiResponse}
+              </ReactMarkdown>
+            )}
           </div>
         </div>
       </div>

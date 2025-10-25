@@ -10,9 +10,7 @@
   text-align: center;
   background: linear-gradient(135deg, #f5f0e6, #ffe4b3);
   overflow-y: auto;
-  /* Firefox */
   scrollbar-width: none; 
-  /* IE 10+ */
   -ms-overflow-style: none; 
 }
 
@@ -55,7 +53,6 @@
   display: flex;
   justify-content: center;
   gap: 20px;
-  /* responsive for smaller screens */
   flex-wrap: wrap; 
 }
 
@@ -167,11 +164,8 @@
   font-size: 14px;
   color: #3a393f;
   text-align: center;
-  /* stick to bottom naturally */
-  flex: 0 0 auto;
 }
    
-
 .home-footer a {
   color: #322f21c1;
   text-decoration: none;

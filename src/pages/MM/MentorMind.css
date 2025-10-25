@@ -24,13 +24,13 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* Hide scrollbars while keeping scrollability */
-  scrollbar-width: none;  /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .mentormind-panel::-webkit-scrollbar {
-  display: none;  /* Webkit browsers (Chrome, Safari, Edge) */
+  display: none; 
 }
 .mentormind-panel:hover {
   transform: translateY(-3px);
@@ -135,6 +135,8 @@
   gap: 12px;
   margin-top: 16px;
   width: 100%;
+  flex: 1;  /* Allow chat container to expand and fill available space */
+  min-height: 0;  /* Allow flex item to shrink below content size */
 }
 
 .chat-input-box {
@@ -142,13 +144,13 @@
   border: 2px solid #e8d5b7;
   border-radius: 12px;
   padding: 12px;
-  min-height: 60px;  /* Reduced from 80px */
-  max-height: 150px;  /* Reduced from 200px */
-  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  min-height: 60px;
+  max-height: 150px;
+  overflow-y: auto;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  /* Auto-resize based on content */
   resize: vertical;
+  flex: 0 0 auto; /* Don't grow or shrink */
 }
 
 .chat-input-box:focus-within {
@@ -182,21 +184,13 @@
   border: 2px solid #e8d5b7;
   border-radius: 12px;
   padding: 12px;
-  min-height: 80px;  /* Reduced from 120px */
-  max-height: 250px;  /* Reduced from 300px */
-  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  min-height: 80px;
+  max-height: none;
+  overflow-y: auto;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  /* Auto-resize based on content */
+  flex: 1;
   resize: vertical;
-}
-
-.chat-response-box:hover {
-  border-color: #c1a45f;
-  box-shadow: 0 4px 12px rgba(193, 164, 95, 0.15);
-}
-
-.chat-response-content {
   font-family: 'Segoe UI', Roboto, sans-serif;
   font-size: 0.95rem;
   color: #3a393f;
@@ -205,10 +199,9 @@
   word-wrap: break-word;
 }
 
-.chat-response-content:empty::before {
-  content: "AI tutor responses will appear here...";
-  color: #999;
-  font-style: italic;
+.chat-response-box:hover {
+  border-color: #c1a45f;
+  box-shadow: 0 4px 12px rgba(193, 164, 95, 0.15);
 }
 
 /* Hide scrollbars for chat boxes while keeping scrollability */
@@ -219,8 +212,8 @@
 
 .chat-input-box,
 .chat-response-box {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; 
+  scrollbar-width: none;  
 }
 
 /* Quiz boxes in middle panel */
@@ -230,8 +223,8 @@
   gap: 12px;
   margin-top: 16px;
   width: 100%;
-  flex: 1;  /* Allow quiz container to expand */
-  min-height: 0;  /* Allow flex item to shrink below content size */
+  flex: 1; 
+  min-height: 0;  
 }
 
 .quiz-question-box {
@@ -239,12 +232,12 @@
   border: 2px solid #e8d5b7;
   border-radius: 12px;
   padding: 16px;
-  min-height: 200px;  /* Bigger box for quiz display */
+  min-height: 200px;  
   max-height: 400px;
-  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  overflow-y: auto;  
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  flex: 1;  /* Allow question box to expand and fill available space */
+  flex: 1; 
 }
 
 .quiz-question-box:hover {
@@ -272,9 +265,9 @@
   border: 2px solid #e8d5b7;
   border-radius: 12px;
   padding: 12px;
-  min-height: 60px;  /* Smaller box for user answer input */
+  min-height: 60px;  
   max-height: 120px;
-  overflow-y: auto;  /* To revert: change to 'hidden' to disable scrolling */
+  overflow-y: auto;  
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
@@ -290,14 +283,13 @@
   min-height: 100%;
   border: none;
   background: transparent;
-  resize: none;  /* To revert: change to 'vertical' to allow manual resizing */
+  resize: none;  
   outline: none;
   font-family: 'Segoe UI', Roboto, sans-serif;
   font-size: 0.95rem;
   color: #3a393f;
   line-height: 1.5;
-  /* Auto-expand textarea */
-  overflow-y: hidden;  /* To revert: change to 'auto' to show scrollbar */
+  overflow-y: hidden;  
 }
 
 .quiz-answer-box textarea::placeholder {
@@ -313,6 +305,6 @@
 
 .quiz-question-box,
 .quiz-answer-box {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  
+  scrollbar-width: none; 
 }

@@ -18,8 +18,8 @@ body::-webkit-scrollbar {
 
 /* Also hide scrollbar for html element */
 html {
-  scrollbar-width: none;  /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  
+  -ms-overflow-style: none;  
 }
 
 html::-webkit-scrollbar {

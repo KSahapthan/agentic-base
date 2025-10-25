@@ -1,7 +1,7 @@
 // src/AppRoutes.jsx
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Homepage/Home.jsx';
-import MentorMind from './pages/MM/MentorMind';
+import MentorMind from './pages/MM/MentorMind.jsx';
 
 const AppRoutes = () => (
   <Routes>
