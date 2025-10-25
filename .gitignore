@@ -28,3 +28,4 @@ dist-ssr
 
 # local created folders
 /MMagent_learning
+.cursorignore

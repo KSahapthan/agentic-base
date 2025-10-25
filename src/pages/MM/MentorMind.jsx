@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import ActionButtons from '../../components/MentorMind/ActionButtons';
+import EvalAgent from '../../components/MentorMind/EvalAgent';
 import './MentorMind.css';
 
 // define a functional React component
@@ -514,47 +515,11 @@ const MentorMind = () => {
       {/* Right Section — Feedback / Explanations */}
       <div className="mentormind-panel right-panel">
         <h2 className="panel-title">Feedback (or) Answers</h2>
-        <div className="panel-content">
-          {evaluation ? (
-            <div>
-              <h3>Evaluator Feedback</h3>
-              <div style={{ 
-                backgroundColor: '#f5f5f5', 
-                padding: '12px', 
-                borderRadius: '8px',
-                marginTop: '8px'
-              }}>
-                <p><strong>Your Answer:</strong> {userAnswer}</p>
-                <p><strong>Correct Answer:</strong> {currentQuestion?.A}</p>
-                <p style={{ 
-                  color: evaluation.evaluation === '1' ? '#4CAF50' : '#f44336',
-                  fontWeight: 'bold',
-                  marginTop: '8px'
-                }}>
-                  {evaluation.evaluation === '1' ? '✅ Correct!' : '❌ Incorrect'}
-                </p>
-                {evaluation.feedback && (
-                  <div style={{ marginTop: '12px' }}>
-                    <p><strong>AI Feedback:</strong></p>
-                    <p style={{ fontStyle: 'italic', color: '#666' }}>
-                      {evaluation.feedback}
-                    </p>
-                  </div>
-                )}
-                {currentQuestion?.E && (
-                  <div style={{ marginTop: '12px' }}>
-                    <p><strong>Explanation:</strong></p>
-                    <p style={{ fontStyle: 'italic', color: '#666' }}>
-                      {currentQuestion.E}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <p>AI feedback and explanations will be displayed here</p>
-          )}
-        </div>
+        <EvalAgent 
+          evaluation={evaluation}
+          userAnswer={userAnswer}
+          currentQuestion={currentQuestion}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,38 @@
+/* EvalAgent component styles */
+.eval-feedback-container {
+  background-color: #f5f5f5; 
+  padding: 12px; 
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.eval-result {
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.eval-result.correct {
+  color: #4CAF50;
+}
+
+.eval-result.incorrect {
+  color: #f44336;
+}
+
+.eval-feedback {
+  margin-top: 12px;
+}
+
+.feedback-text {
+  font-style: italic;
+  color: #666;
+}
+
+.eval-explanation {
+  margin-top: 12px;
+}
+
+.explanation-text {
+  font-style: italic;
+  color: #666;
+}

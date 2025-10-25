@@ -23,19 +23,13 @@ def evaluate_answer(request: EvaluateAnswerRequest):
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="Gemini API key not found.")
-        
         agent = EvaluatorAgent(api_key=api_key)
-        
-        # Create evaluation input
         eval_input = EvaluationInput(
             true_answer=request.true_answer,
             user_answer=request.user_answer,
             give_feedback=request.give_feedback
         )
-        
-        # Generate evaluation
         eval_output: EvaluationOutput = agent.run(eval_input)
-        
         return {
             "status": "success",
             "evaluation": eval_output.model_dump(),
