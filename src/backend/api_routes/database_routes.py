@@ -7,7 +7,7 @@ from typing import Optional
 
 from .utils import init_learning_folders
 
-router = APIRouter(prefix="/db", tags=["database"])
+router = APIRouter(tags=["database"])
 
 # Initialize learning folders and get paths
 paths = init_learning_folders(3)
@@ -43,6 +43,9 @@ def mark_subtopic_completed(request: UpdateCompletionRequest):
         # Load current plan config
         plan_config = json.loads(plan_config_path.read_text(encoding="utf-8"))
         
+        print(f"DEBUG: Marking subtopic completed - Request: {request.model_dump()}")
+        print(f"DEBUG: Available topics: {[t['topic_id'] for t in plan_config['topics']]}")
+        
         # Find the topic and subtopic
         topic_found = False
         subtopic_found = False
@@ -50,7 +53,9 @@ def mark_subtopic_completed(request: UpdateCompletionRequest):
         for topic in plan_config["topics"]:
             if topic["topic_id"] == request.topic_id:
                 topic_found = True
+                print(f"DEBUG: Found topic {request.topic_id}")
                 if "subtopics" in topic:
+                    print(f"DEBUG: Available subtopics: {[s['subtopic_id'] for s in topic['subtopics']]}")
                     for subtopic in topic["subtopics"]:
                         if subtopic["subtopic_id"] == request.subtopic_id:
                             subtopic["completed"] = True

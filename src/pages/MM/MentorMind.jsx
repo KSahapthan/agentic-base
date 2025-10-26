@@ -158,6 +158,7 @@ const MentorMind = () => {
       
       // Start with first subtopic
       const firstSubtopic = topicData.subtopics[0];
+      console.log('DEBUG: Starting with first subtopic:', firstSubtopic);
       setCurrentSubtopicIndex(0);
       setCurrentSubtopicId(firstSubtopic.subtopic_id);
       setCorrectAnswersCount(0); // Reset correct answers count
@@ -243,6 +244,21 @@ const MentorMind = () => {
     } else {
       // All questions completed for this subtopic
       try {
+        console.log('DEBUG: Attempting to complete subtopic:', {
+          skill_id: currentSkillId,
+          topic_id: skillDetails.current_topic_id,
+          subtopic_id: currentSubtopicId,
+          currentSubtopicIndex,
+          allSubtopicsLength: allSubtopics.length
+        });
+        
+        // Safety check: ensure we have a valid subtopic ID
+        if (!currentSubtopicId) {
+          console.error('ERROR: currentSubtopicId is null or undefined');
+          alert('Error: Current subtopic ID is missing. Please restart the learning session.');
+          return;
+        }
+        
         // Mark current subtopic as completed and update mastery
         await axios.post('http://127.0.0.1:8000/db/mark-subtopic-completed', {
           skill_id: currentSkillId,
@@ -318,6 +334,7 @@ const MentorMind = () => {
             console.log(`Moving to next subtopic: ${nextSubtopicIndex + 1}/${allSubtopics.length}`);
             setCurrentSubtopicIndex(nextSubtopicIndex);
             const nextSubtopic = allSubtopics[nextSubtopicIndex];
+            console.log('DEBUG: Next subtopic:', nextSubtopic);
             setCurrentSubtopicId(nextSubtopic.subtopic_id);
             setCorrectAnswersCount(0);
             
@@ -345,6 +362,13 @@ const MentorMind = () => {
         }
       } catch (error) {
         console.error('Error completing subtopic:', error);
+        console.error('Error details:', {
+          response: error.response?.data,
+          status: error.response?.status,
+          message: error.message,
+          currentSubtopicId,
+          skillDetails
+        });
         alert(`Error completing subtopic: ${error.response?.data?.detail || error.message}`);
       }
     }
