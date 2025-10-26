@@ -1,16 +1,9 @@
-<h1 align="center">🚀 AgenticBase</h1>
+## About the project : AgenticBase
+AgenticBase is a full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment. Built with modern web technologies and powered by **Google's Gemini AI**, it provides personalized learning experiences, code analysis, and intelligent tutoring
 
 <p align="center">
-  <em>Your AI-Powered Personal Agent Hub for Learning, Code Exploration, and Intelligent Automation</em>
+  <img src="public/ab-raw-3.png" alt="AgenticBase Favicon" width="250"/>
 </p>
-
-<p align="center">
-  <img src="public/ab-raw-3.png" alt="AgenticBase Banner" width="300"/>
-</p>
-
----
-
-AgenticBase is a full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment. Built with modern web technologies and powered by **Google's Gemini AI**, it provides personalized learning experiences, code analysis, and intelligent tutoring.
 
 ## Key Features
 ### MentorMind — AI-Powered Adaptive Tutor
