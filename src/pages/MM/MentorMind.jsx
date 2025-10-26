@@ -66,10 +66,29 @@ const MentorMind = () => {
     fetchCurrentTopic();
   }, [currentSkillId]);
 
+  // Helper function to reset quiz state
+  const resetQuizState = () => {
+    setQuizState('idle');
+    setCurrentQuestion(null);
+    setUserAnswer('');
+    setEvaluation(null);
+    setCurrentQuestionNumber(1);
+    setShowContinueButton(false);
+    setCurrentSubtopicIndex(0);
+    setAllSubtopics([]);
+    setCorrectAnswersCount(0);
+    setCurrentSubtopicId(null);
+  };
+
   // Handler to update skill ID
   const handleSkillChange = (skillId) => {
     // Debug log
     console.log('Updating skill ID to:', skillId); 
+    
+    // Reset quiz state when changing skills
+    resetQuizState();
+    
+    // Update skill ID
     setCurrentSkillId(skillId);
     if (skillId) {
       localStorage.setItem('currentSkillId', skillId);

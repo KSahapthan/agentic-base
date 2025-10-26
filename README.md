@@ -10,20 +10,21 @@ AgenticBase is a cutting-edge full-stack application that combines the power of 
 
 ### 🧠 **MentorMind - AI-Powered Adaptive Tutor**
 - **Personalized Learning Plans**: AI generates structured learning paths for any skill
-- **Interactive Quizzing**: 5-question adaptive quizzes with real-time evaluation
+- **Interactive Quizzing**: 
+  - 5-question adaptive quizzes with real-time evaluation
+  - Rich markdown support for code snippets, math equations, and diagrams
+  - Button controls to ensure proper evaluation flow
 - **Intelligent Chat Support**: Get instant help and explanations from AI tutors
-- **Progress Tracking**: Monitor your learning journey with detailed analytics
+- **Progress Tracking**: 
+  - Monitor your learning journey with detailed analytics
+  - Topic mastery calculation based on subtopic performance
+  - JSON-based progress persistence
 - **Multi-Skill Management**: Learn multiple skills simultaneously
 
 ### 🔍 **CodeExplorer - AI Code Analysis** *(Coming Soon)*
 - **Intelligent Code Navigation**: AI-powered codebase exploration
 - **Automated Code Analysis**: Deep insights into code structure and patterns
 - **Smart Debugging**: AI-assisted problem identification and solutions
-
-### 🌐 **NihonAgent - Japanese Learning Assistant** *(Coming Soon)*
-- **Language Learning**: Specialized Japanese language tutoring
-- **Cultural Context**: Learn Japanese with cultural insights
-- **Interactive Practice**: AI-powered conversation practice
 
 ## 🛠️ Tech Stack
 
@@ -201,24 +202,10 @@ agentic-base/
 - [x] Quiz system with evaluation
 - [x] Chat support integration
 - [x] Multi-skill management
+- [x] Rich markdown support for quiz content
+- [x] Enhanced evaluation flow control
+- [x] Topic mastery calculation system
 
-### **Phase 2 - Code Intelligence** 🔄
-- [ ] CodeExplorer agent development
-- [ ] Codebase analysis features
-- [ ] Automated debugging assistance
-- [ ] Code quality insights
-
-### **Phase 3 - Language Learning** 📅
-- [ ] NihonAgent for Japanese learning
-- [ ] Multi-language support
-- [ ] Cultural context integration
-- [ ] Conversation practice
-
-### **Phase 4 - Advanced Features** 📅
-- [ ] Progress analytics dashboard
-- [ ] Learning streak tracking
-- [ ] Achievement system
-- [ ] Social learning features
 
 ## 🤝 Contributing
 
