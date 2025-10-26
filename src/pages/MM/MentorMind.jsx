@@ -27,6 +27,10 @@ const MentorMind = () => {
   // Topic and subtopic tracking
   const [currentSubtopicIndex, setCurrentSubtopicIndex] = useState(0);
   const [allSubtopics, setAllSubtopics] = useState([]);
+  
+  // Quiz tracking state
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [currentSubtopicId, setCurrentSubtopicId] = useState(null);
 
   // Load saved skill ID on mount (only once)
   useEffect(() => {
@@ -155,6 +159,8 @@ const MentorMind = () => {
       // Start with first subtopic
       const firstSubtopic = topicData.subtopics[0];
       setCurrentSubtopicIndex(0);
+      setCurrentSubtopicId(firstSubtopic.subtopic_id);
+      setCorrectAnswersCount(0); // Reset correct answers count
       
       // Generate quiz for first subtopic
       await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
@@ -176,15 +182,19 @@ const MentorMind = () => {
     }
   };
 
-  const loadQuestion = async (questionNumber) => {
+  const loadQuestion = async (questionNumber, subtopicIndex = null) => {
+    const actualSubtopicIndex = (subtopicIndex !== null ? subtopicIndex : currentSubtopicIndex) + 1;
+    console.log(`Loading question ${questionNumber} for subtopic index: ${actualSubtopicIndex}`);
+    
     try {
       const response = await axios.post('http://127.0.0.1:8000/quiz/get-question', {
         skill_id: currentSkillId,
         topic_id: skillDetails.current_topic_id,
-        subtopic_index: currentSubtopicIndex + 1, 
+        subtopic_index: actualSubtopicIndex, 
         question_number: questionNumber
       });
       
+      console.log(`Question loaded successfully from subtopic ${actualSubtopicIndex}`);
       setCurrentQuestion(response.data.question);
       setQuizState('question');
       setUserAnswer('');
@@ -209,7 +219,16 @@ const MentorMind = () => {
       });
       
       setEvaluation(response.data.evaluation);
-      setShowContinueButton(true);
+      
+      // Track correct answers
+      if (response.data.evaluation.evaluation === '1') {
+        setCorrectAnswersCount(prev => prev + 1);
+      }
+      
+      // Only show continue button after evaluation is complete
+      setTimeout(() => {
+        setShowContinueButton(true);
+      }, 1000); // Give user time to see the evaluation
     } catch (error) {
       console.error('Error evaluating answer:', error);
     }
@@ -223,41 +242,110 @@ const MentorMind = () => {
       loadQuestion(nextNumber);
     } else {
       // All questions completed for this subtopic
-      const nextSubtopicIndex = currentSubtopicIndex + 1;
-      
-      if (nextSubtopicIndex < allSubtopics.length) {
-        // Move to next subtopic
-        setCurrentSubtopicIndex(nextSubtopicIndex);
-        const nextSubtopic = allSubtopics[nextSubtopicIndex];
+      try {
+        // Mark current subtopic as completed and update mastery
+        await axios.post('http://127.0.0.1:8000/db/mark-subtopic-completed', {
+          skill_id: currentSkillId,
+          topic_id: skillDetails.current_topic_id,
+          subtopic_id: currentSubtopicId
+        });
         
-        try {
-          // Generate quiz for next subtopic
-          await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
-            skill_id: currentSkillId,
-            topic_id: skillDetails.current_topic_id,
-            subtopic_name: nextSubtopic.name,
-            subtopic_description: nextSubtopic.description || `Learning about ${nextSubtopic.name}`,
-            focus_areas: ['understanding', 'application'],
-            user_context: 'Interactive learning session',
-            current_mastery: 50
-          });
-          
-          setCurrentQuestionNumber(1);
-          setQuizState('question');
-          setUserAnswer('');
-          setEvaluation(null);
+        await axios.post('http://127.0.0.1:8000/db/update-subtopic-mastery', {
+          skill_id: currentSkillId,
+          topic_id: skillDetails.current_topic_id,
+          subtopic_id: currentSubtopicId,
+          correct_answers: correctAnswersCount,
+          total_questions: 5
+        });
+        
+        console.log(`Subtopic ${currentSubtopicId} completed! Correct answers: ${correctAnswersCount}/5`);
+        
+        // Update topic progress and get next topic/subtopic
+        const progressResponse = await axios.post('http://127.0.0.1:8000/db/update-topic-progress', {
+          skill_id: currentSkillId,
+          topic_id: skillDetails.current_topic_id,
+          subtopic_id: currentSubtopicId
+        });
+        
+        const { current_topic_id, all_topics_completed } = progressResponse.data;
+        
+        if (all_topics_completed) {
+          // All topics completed
+          setQuizState('idle');
           setShowContinueButton(false);
-          loadQuestion(1);
-        } catch (error) {
-          console.error('Error generating quiz for next subtopic:', error);
-          alert(`Error moving to next subtopic: ${error.response?.data?.detail || error.message}`);
+          alert(`🎉 Congratulations! You have completed all topics for this skill. Final score: ${correctAnswersCount}/5 correct answers in the last subtopic. Great job!`);
+        } else if (current_topic_id !== skillDetails.current_topic_id) {
+          // Moved to next topic
+          console.log(`Moved to next topic: ${current_topic_id}`);
+          
+          // Update skill details
+          const newSkillDetails = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
+          setSkillDetails(newSkillDetails.data);
+          
+          // Load new topic data
+          const topicData = await loadTopicData();
+          if (topicData && topicData.subtopics && topicData.subtopics.length > 0) {
+            setAllSubtopics(topicData.subtopics);
+            setCurrentSubtopicIndex(0);
+            setCurrentSubtopicId(topicData.subtopics[0].subtopic_id);
+            setCorrectAnswersCount(0);
+            
+            // Set loading state before generating quiz
+            setQuizState('learning');
+            
+            // Generate quiz for first subtopic of new topic
+            await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
+              skill_id: currentSkillId,
+              topic_id: current_topic_id,
+              subtopic_name: topicData.subtopics[0].name,
+              subtopic_description: topicData.subtopics[0].description || `Learning about ${topicData.subtopics[0].name}`,
+              focus_areas: ['understanding', 'application'],
+              user_context: 'Interactive learning session',
+              current_mastery: 50
+            });
+            
+            setCurrentQuestionNumber(1);
+            setQuizState('question');
+            setUserAnswer('');
+            setEvaluation(null);
+            setShowContinueButton(false);
+            loadQuestion(1);
+          }
+        } else {
+          // Moved to next subtopic in same topic
+          const nextSubtopicIndex = currentSubtopicIndex + 1;
+          if (nextSubtopicIndex < allSubtopics.length) {
+            console.log(`Moving to next subtopic: ${nextSubtopicIndex + 1}/${allSubtopics.length}`);
+            setCurrentSubtopicIndex(nextSubtopicIndex);
+            const nextSubtopic = allSubtopics[nextSubtopicIndex];
+            setCurrentSubtopicId(nextSubtopic.subtopic_id);
+            setCorrectAnswersCount(0);
+            
+            // Set loading state before generating quiz
+            setQuizState('learning');
+            
+            // Generate quiz for next subtopic
+            await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
+              skill_id: currentSkillId,
+              topic_id: skillDetails.current_topic_id,
+              subtopic_name: nextSubtopic.name,
+              subtopic_description: nextSubtopic.description || `Learning about ${nextSubtopic.name}`,
+              focus_areas: ['understanding', 'application'],
+              user_context: 'Interactive learning session',
+              current_mastery: 50
+            });
+            
+            setCurrentQuestionNumber(1);
+            setQuizState('question');
+            setUserAnswer('');
+            setEvaluation(null);
+            setShowContinueButton(false);
+            loadQuestion(1, nextSubtopicIndex);
+          }
         }
-      } else {
-        // All subtopics completed for this topic
-        setQuizState('idle');
-        setShowContinueButton(false);
-        alert('🎉 Congratulations! You have completed all subtopics for this topic. Great job!');
-        // TODO: Move to next topic in the learning plan
+      } catch (error) {
+        console.error('Error completing subtopic:', error);
+        alert(`Error completing subtopic: ${error.response?.data?.detail || error.message}`);
       }
     }
   };
@@ -386,13 +474,21 @@ const MentorMind = () => {
         )}
         
         {/* Current Subtopic and Question Info */}
-        {currentSkillId && allSubtopics.length > 0 && currentQuestion && (
+        {currentSkillId && skillDetails && (
           <div className="current-skill-info">
             <span className="subtopic-id">Subtopic {currentSubtopicIndex + 1}</span>
             <span className="separator">•</span>
-            <span className="subtopic-name">{allSubtopics[currentSubtopicIndex]?.name}</span>
-            <span className="separator">•</span>
-            <span className="question-info">Question {currentQuestionNumber}/5</span>
+            <span className="subtopic-name">{skillDetails.current_subtopic_name || allSubtopics[currentSubtopicIndex]?.name || 'Loading...'}</span>
+            {currentQuestion && (
+              <>
+                <span className="separator">•</span>
+                <span className="question-info">Question {currentQuestionNumber}/5</span>
+                <span className="separator">•</span>
+                <span className="question-info" style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                  Correct: {correctAnswersCount}/5
+                </span>
+              </>
+            )}
           </div>
         )}
         
@@ -426,6 +522,9 @@ const MentorMind = () => {
                 {quizState === 'learning' && (
                   <div style={{ textAlign: 'center', padding: '20px' }}>
                     <p>Generating quiz questions...</p>
+                    <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '8px' }}>
+                      {currentSubtopicIndex === 0 ? 'Preparing your first quiz' : `Loading questions for subtopic ${currentSubtopicIndex + 1}`}
+                    </p>
                   </div>
                 )}
                 
@@ -490,17 +589,17 @@ const MentorMind = () => {
               <div style={{ textAlign: 'center', marginTop: '16px' }}>
                 <button
                   onClick={nextQuestion}
-                  disabled={quizState === 'question'}  // Disable if still on question
+                  disabled={quizState === 'question' || quizState === 'learning'}  // Disable if still on question or generating quiz
                   style={{
-                    backgroundColor: quizState === 'question' ? '#ccc' : '#4CAF50',
+                    backgroundColor: (quizState === 'question' || quizState === 'learning') ? '#ccc' : '#4CAF50',
                     color: 'white',
                     border: 'none',
                     padding: '12px 24px',
                     borderRadius: '8px',
-                    cursor: quizState === 'question' ? 'not-allowed' : 'pointer',
+                    cursor: (quizState === 'question' || quizState === 'learning') ? 'not-allowed' : 'pointer',
                     fontSize: '16px',
                     fontWeight: 'bold',
-                    opacity: quizState === 'question' ? 0.6 : 1
+                    opacity: (quizState === 'question' || quizState === 'learning') ? 0.6 : 1
                   }}
                 >
                   {currentQuestionNumber < 5 ? 'Next Question →' : 

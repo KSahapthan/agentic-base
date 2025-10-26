@@ -79,6 +79,7 @@ def create_skill_plan(request: CreateSkillPlanRequest):
         plan_dict.update({
             "total_topics": len(plan_dict["topics"]),
             "current_topic_id": plan_dict["topics"][0]["topic_id"] if plan_dict["topics"] else None,
+            "current_subtopic_id": plan_dict["topics"][0]["subtopics"][0]["subtopic_id"] if plan_dict["topics"] and plan_dict["topics"][0].get("subtopics") else None,
             "overall_progress": 0
         })
         plan_config_path = skill_folder / "plan_config.json"

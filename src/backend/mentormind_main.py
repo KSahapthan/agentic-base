@@ -5,11 +5,12 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import os
 
-# Import routers (3 main agents + planning)
+# Import routers (3 main agents + planning + database)
 from .api_routes.chat_routes import router as chat_router
 from .api_routes.quiz_routes import router as quiz_router
 from .api_routes.evaluator_routes import router as evaluator_router
 from .api_routes.planning_routes import router as planning_router
+from .api_routes.database_routes import router as database_router
 
 # Load environment variables
 load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
@@ -49,6 +50,7 @@ app.include_router(planning_router, prefix="/plan", tags=["Planning Agent"])
 app.include_router(chat_router, prefix="/chat", tags=["Chat Agent"])
 app.include_router(quiz_router, prefix="/quiz", tags=["Quiz Agent"])
 app.include_router(evaluator_router, prefix="/evaluate", tags=["Evaluator Agent"])
+app.include_router(database_router, prefix="/db", tags=["Database Operations"])
 
 # Root endpoint
 @app.get("/")

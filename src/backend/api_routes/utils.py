@@ -74,21 +74,40 @@ def get_current_topic_name(learning_skills_path: Path, metadata_path: Path, skil
         )
         # Get current topic ID and name
         current_topic_id = plan_config["current_topic_id"]
+        current_subtopic_id = plan_config.get("current_subtopic_id")
         current_topic = next(
             ({"name": topic["name"], "topic_id": topic["topic_id"]} 
              for topic in plan_config["topics"] 
              if topic["topic_id"] == current_topic_id),
             {"name": "No topic found", "topic_id": "none"}
         )
+        
+        # Get current subtopic name if available
+        current_subtopic_name = "No subtopic found"
+        if current_subtopic_id and current_topic_id != "none":
+            for topic in plan_config["topics"]:
+                if topic["topic_id"] == current_topic_id and "subtopics" in topic:
+                    subtopic = next(
+                        (st for st in topic["subtopics"] if st["subtopic_id"] == current_subtopic_id),
+                        None
+                    )
+                    if subtopic:
+                        current_subtopic_name = subtopic["name"]
+                        break
+        
         return {
             "skill_name": skill_name,
             "current_topic": current_topic["name"],
-            "current_topic_id": current_topic_id
+            "current_topic_id": current_topic_id,
+            "current_subtopic_id": current_subtopic_id,
+            "current_subtopic_name": current_subtopic_name
         }
     except Exception as e:
         print(f"Error getting current topic: {e}")
         return {
             "skill_name": "Error loading skill",
             "current_topic": "Error loading topic",
-            "current_topic_id": "error"
+            "current_topic_id": "error",
+            "current_subtopic_id": "error",
+            "current_subtopic_name": "Error loading subtopic"
         }
