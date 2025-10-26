@@ -1,11 +1,11 @@
-## About the project : AgenticBase
+## 📄 About the project : AgenticBase
 AgenticBase is a full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment. Built with modern web technologies and powered by **Google's Gemini AI**, it provides personalized learning experiences, code analysis, and intelligent tutoring
 
 <p align="center">
   <img src="public/ab-raw-3.png" alt="AgenticBase Favicon" width="250"/>
 </p>
 
-## Key Features
+## ✨ Key Features
 ### MentorMind — AI-Powered Adaptive Tutor
 - **Personalized Learning Paths (Planning Agent):** Automatically generates structured learning plans for any skill or domain  
 - **Interactive Quizzing (Quiz Agent):** Adaptive 5-question quizzes with real-time evaluation
@@ -17,7 +17,7 @@ AgenticBase is a full-stack application that combines the power of multiple AI a
 - **Code Navigation**: AI-assisted exploration of codebases for better context and understanding.   
 - **AI Debugging**: Identifies potential issues and suggests solutions intelligently
 
-## Tech Stack
+## 🛠️ Tech Stack
 ### Frontend
 <p>
   <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black" />
@@ -37,7 +37,7 @@ AgenticBase is a full-stack application that combines the power of multiple AI a
   <img src="https://img.shields.io/badge/Google-4285F4?logo=google&logoColor=white" />
 </p>
  
-## Installation
+## ⚙️ Installation
 
 **Clone the repository**
    ```bash
@@ -50,8 +50,9 @@ AgenticBase is a full-stack application that combines the power of multiple AI a
    pip install fastapi uvicorn python-dotenv google-genai pydantic
    ```
 **Set up environment variables**
-   Create a `.env` file in the root directory:
+   
    ```env
+   # Create a `.env` file in the root directory
    GEMINI_PRIMARY_KEY=your_gemini_api_key_here
    ```
 **Start the application**
@@ -61,8 +62,7 @@ AgenticBase is a full-stack application that combines the power of multiple AI a
 This will start both the React frontend (http://localhost:5173) and FastAPI backend (http://localhost:8000)
 
 
-
-## Architecture
+## 🏗️ MentorMind Design
 <p align="center">
   <img src="public/architecture.png" alt="MentorMind Architecture" width="300"/>
 </p>
@@ -101,7 +101,7 @@ agentic-base/
 │   │   └── mentormind_main.py  # FastAPI backend entry point
 ```
 
-## Ready to get started with AgenticBase?**
+## 🚀 Ready to get started with AgenticBase?
 
 Explore the project and see how it can help you streamline learning and code exploration
 
