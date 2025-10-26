@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="public/ab-raw-3.png" alt="AgenticBase Banner" width="800"/>
+  <img src="public/ab-raw-3.png" alt="AgenticBase Banner" width="400"/>
 </p>
 
 ---
