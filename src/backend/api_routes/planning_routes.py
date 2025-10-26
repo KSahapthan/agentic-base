@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List
 from pathlib import Path
+from .utils import init_learning_folders, get_all_skills, get_current_topic_name
 
 load_dotenv()
 router = APIRouter()
@@ -25,8 +26,6 @@ class SkillInfo(BaseModel):
     name: str
     mastery: float
 
-from .utils import init_learning_folders, get_all_skills, get_current_topic_name
-
 # Initialize learning folders and get paths
 paths = init_learning_folders(3)
 MM_LEARNING_ROOT = paths["MM_LEARNING_ROOT"]
@@ -40,14 +39,11 @@ def create_skill_plan(request: CreateSkillPlanRequest):
     try:
         skill_name = request.skill_name.strip()
         user_context = request.user_context.strip()
-        # --- Initialize PlanningAgent ---
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="Gemini API key not found.")
         agent = PlanningAgent(api_key=api_key)
-        # --- Generate plan ---
         plan_output: PlanOutput = agent.run(skill=skill_name, context=user_context)
-        # --- Load or initialize metadata ---
         if SKILLS_METADATA_PATH.exists():
             metadata = json.loads(SKILLS_METADATA_PATH.read_text(encoding="utf-8"))
         else:
@@ -76,7 +72,8 @@ def create_skill_plan(request: CreateSkillPlanRequest):
                     subtopic.update({
                         "subtopic_id": subtopic_id,
                         "order": sub_index + 1,
-                        "completed": False
+                        "completed": False,
+                        "mastery": 0
                     })
         # Add metadata about topics structure
         plan_dict.update({
@@ -129,17 +126,13 @@ def get_topic_data(skill_id: str, topic_id: str):
     try:
         skill_folder = LEARNING_SKILLS_PATH / skill_id
         plan_config_path = skill_folder / "plan_config.json"
-        
         if not plan_config_path.exists():
             raise HTTPException(status_code=404, detail="Plan config not found for this skill.")
-        
         plan_config = json.loads(plan_config_path.read_text(encoding="utf-8"))
-        
         # Find the topic by topic_id
         topic = next((t for t in plan_config["topics"] if t["topic_id"] == topic_id), None)
         if not topic:
             raise HTTPException(status_code=404, detail=f"Topic {topic_id} not found.")
-        
         return {
             "status": "success",
             "topic": topic,
@@ -155,12 +148,10 @@ def get_current_topic_name(learning_skills_path: Path, metadata_path: Path, skil
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         skill = next((s for s in metadata["skills"] if s["id"] == skill_id), None)
         skill_name = skill["name"] if skill else "Unknown Skill"
-
         # Read plan config
         plan_config = json.loads(
             (learning_skills_path / skill_id / "plan_config.json").read_text(encoding="utf-8")
         )
-        
         # Get current topic ID and name
         current_topic_id = plan_config["current_topic_id"]
         current_topic = next(

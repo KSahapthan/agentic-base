@@ -4,7 +4,7 @@
 
 AgenticBase is a cutting-edge full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment. Built with modern web technologies and powered by Google's Gemini AI, it provides personalized learning experiences, code analysis, and intelligent tutoring.
 
-![AgenticBase Banner](public/ab-raw.png)
+![AgenticBase Banner](public/ab-raw-3.png)
 
 ## ✨ Key Features
 

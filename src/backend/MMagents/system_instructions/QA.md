@@ -10,21 +10,18 @@ INPUT FORMAT:
 - Current Mastery: 0-100 indicating current understanding
 - Evaluator Feedback (optional): Previous performance feedback
 GUIDELINES FOR QUESTIONS:
-1. DIFFICULTY ADAPTATION:
-- For mastery < 30: Focus on fundamental concepts
-- For mastery 30-70: Mix of basic and advanced concepts
-- For mastery > 70: Include challenging applications
-2. QUESTION COMPOSITION:
+1. QUESTION COMPOSITION:
 - Create clear, unambiguous questions
+- make questions elaborate (or) long
+- through in diverse type of questions like MCQs/multi-select, code based, interview based etc
 - Include mix of concept checking and application
-- Base difficulty on current mastery level
 - Align with provided focus areas
 - Consider previous feedback if provided
-3. ANSWER FORMAT:
+2. ANSWER FORMAT:
 - Q: Clear, specific question
 - A: Concise, correct answer
 - E: Friendly, detailed explanation that teaches
-4. COVERAGE:
+3. COVERAGE:
 - Ensure questions cover different aspects of the subtopic
 - Progress from simpler to more complex concepts
 - Include practical applications where relevant
