@@ -128,6 +128,23 @@
   color: #444;
 }
 
+.current-skill-info .subtopic-name {
+  color: #444;
+  font-weight: 500;
+}
+
+.current-skill-info .subtopic-id {
+  color: #888;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
+.current-skill-info .question-info {
+  color: #888;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+
 /* Chat boxes in left panel */
 .chat-container {
   display: flex;
@@ -270,6 +287,7 @@
   overflow-y: auto;  
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  flex: 1;
 }
 
 .quiz-answer-box:focus-within {

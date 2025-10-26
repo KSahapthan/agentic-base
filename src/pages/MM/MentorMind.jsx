@@ -21,13 +21,11 @@ const MentorMind = () => {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [evaluation, setEvaluation] = useState(null);
-  const [quizData, setQuizData] = useState(null);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [showContinueButton, setShowContinueButton] = useState(false);
   
   // Topic and subtopic tracking
   const [currentSubtopicIndex, setCurrentSubtopicIndex] = useState(0);
-  const [currentTopicData, setCurrentTopicData] = useState(null);
   const [allSubtopics, setAllSubtopics] = useState([]);
 
   // Load saved skill ID on mount (only once)
@@ -49,9 +47,11 @@ const MentorMind = () => {
     const fetchCurrentTopic = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
+        console.log('Skill details response:', response.data);
         setSkillDetails(response.data);
       } catch (err) {
         console.error('Error fetching current topic:', err);
+        console.error('Error details:', err.response?.data || err.message);
         setSkillDetails({
           skill_name: 'Error loading skill',
           current_topic: 'Error loading topic',
@@ -127,7 +127,6 @@ const MentorMind = () => {
       const planResponse = await axios.get(`http://127.0.0.1:8000/plan/get-topic-data/${currentSkillId}/${skillInfo.current_topic_id}`);
       const topicData = planResponse.data;
       
-      setCurrentTopicData(topicData);
       setAllSubtopics(topicData.subtopics || []);
       setCurrentSubtopicIndex(0);
       
@@ -158,7 +157,7 @@ const MentorMind = () => {
       setCurrentSubtopicIndex(0);
       
       // Generate quiz for first subtopic
-      const response = await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
+      await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
         skill_id: currentSkillId,
         topic_id: skillDetails.current_topic_id,
         subtopic_name: firstSubtopic.name,
@@ -168,7 +167,6 @@ const MentorMind = () => {
         current_mastery: 50
       });
       
-      setQuizData(response.data.quiz_data);
       setCurrentQuestionNumber(1);
       loadQuestion(1);
     } catch (error) {
@@ -182,6 +180,8 @@ const MentorMind = () => {
     try {
       const response = await axios.post('http://127.0.0.1:8000/quiz/get-question', {
         skill_id: currentSkillId,
+        topic_id: skillDetails.current_topic_id,
+        subtopic_index: currentSubtopicIndex + 1, 
         question_number: questionNumber
       });
       
@@ -232,7 +232,7 @@ const MentorMind = () => {
         
         try {
           // Generate quiz for next subtopic
-          const response = await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
+          await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
             skill_id: currentSkillId,
             topic_id: skillDetails.current_topic_id,
             subtopic_name: nextSubtopic.name,
@@ -242,7 +242,6 @@ const MentorMind = () => {
             current_mastery: 50
           });
           
-          setQuizData(response.data.quiz_data);
           setCurrentQuestionNumber(1);
           setQuizState('question');
           setUserAnswer('');
@@ -386,6 +385,17 @@ const MentorMind = () => {
           </div>
         )}
         
+        {/* Current Subtopic and Question Info */}
+        {currentSkillId && allSubtopics.length > 0 && currentQuestion && (
+          <div className="current-skill-info">
+            <span className="subtopic-id">Subtopic {currentSubtopicIndex + 1}</span>
+            <span className="separator">•</span>
+            <span className="subtopic-name">{allSubtopics[currentSubtopicIndex]?.name}</span>
+            <span className="separator">•</span>
+            <span className="question-info">Question {currentQuestionNumber}/5</span>
+          </div>
+        )}
+        
         {/* Quiz Container */}
         {currentSkillId ? (
           <div className="quiz-container">
@@ -421,12 +431,6 @@ const MentorMind = () => {
                 
                 {currentQuestion && (
                   <div>
-                    <h3>Question {currentQuestionNumber}/5</h3>
-                    {allSubtopics.length > 0 && (
-                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>
-                        Subtopic {currentSubtopicIndex + 1}/{allSubtopics.length}: {allSubtopics[currentSubtopicIndex]?.name}
-                      </p>
-                    )}
                     <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
                       {currentQuestion.Q}
                     </p>
