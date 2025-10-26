@@ -1,65 +1,67 @@
-# 🚀 AgenticBase
+<h1 align="center">🚀 AgenticBase</h1>
 
-**Your AI-Powered Personal Agent Hub for Learning, Code Exploration, and Intelligent Automation**
+<p align="center">
+  <em>Your AI-Powered Personal Agent Hub for Learning, Code Exploration, and Intelligent Automation</em>
+</p>
 
-AgenticBase is a cutting-edge full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment. Built with modern web technologies and powered by Google's Gemini AI, it provides personalized learning experiences, code analysis, and intelligent tutoring.
+<p align="center">
+  <img src="public/ab-raw-3.png" alt="AgenticBase Banner" width="800"/>
+</p>
 
-![AgenticBase Banner](public/ab-raw-3.png)
+---
 
-## ✨ Key Features
+AgenticBase is a cutting-edge full-stack application that combines the power of multiple AI agents to create an intelligent learning and development environment.  
+Built with modern web technologies and powered by **Google's Gemini AI**, it provides personalized learning experiences, code analysis, and intelligent tutoring.
 
-### 🧠 **MentorMind - AI-Powered Adaptive Tutor**
-- **Personalized Learning Plans**: AI generates structured learning paths for any skill
-- **Interactive Quizzing**: 
-  - 5-question adaptive quizzes with real-time evaluation
-  - Rich markdown support for code snippets, math equations, and diagrams
-  - Button controls to ensure proper evaluation flow
-- **Intelligent Chat Support**: Get instant help and explanations from AI tutors
-- **Progress Tracking**: 
-  - Monitor your learning journey with detailed analytics
-  - Topic mastery calculation based on subtopic performance
-  - JSON-based progress persistence
-- **Multi-Skill Management**: Learn multiple skills simultaneously
+---
 
-### 🔍 **CodeExplorer - AI Code Analysis** *(Coming Soon)*
-- **Intelligent Code Navigation**: AI-powered codebase exploration
-- **Automated Code Analysis**: Deep insights into code structure and patterns
-- **Smart Debugging**: AI-assisted problem identification and solutions
+## Key Features
 
-## 🛠️ Tech Stack
+### MentorMind — AI-Powered Adaptive Tutor
+- **Personalized Learning Paths**: Automatically generates structured learning plans for any skill or domain.  
+- **Interactive Quizzing**:  
+  - Adaptive 5-question quizzes with real-time evaluation.  
+  - Supports rich markdown for code, equations, and diagrams.  
+  - Controlled quiz flow for consistent assessment.  
+- **AI Chat Support**: Integrated tutor for on-demand explanations and guidance.  
+- **Progress Tracking**:  
+  - Detailed learning analytics and topic mastery insights.  
+  - Persistent JSON-based progress storage.  
+- **Multi-Skill Learning**: Seamlessly manage and switch between multiple learning tracks.  
 
-### **Frontend**
-- **React 19** - Modern React with latest features
-- **Vite** - Lightning-fast build tool and dev server
-- **React Router DOM** - Client-side routing
-- **Axios** - HTTP client for API communication
-- **CSS3** - Custom styling with modern features
+### CodeExplorer — Intelligent Code Analysis *(Coming Soon)*
+- **Code Navigation**: AI-assisted exploration of codebases for better context and understanding.  
+- **Automated Insights**: Deep analysis of structure, patterns, and dependencies.  
+- **AI Debugging**: Identifies potential issues and suggests solutions intelligently.  
 
-### **Backend**
-- **FastAPI** - High-performance Python web framework
-- **Google Gemini AI** - Advanced language model integration
-- **Pydantic** - Data validation and serialization
-- **Uvicorn** - ASGI server for FastAPI
 
-### **AI Agents Architecture**
-- **Planning Agent** - Creates structured learning curricula
-- **Quiz Agent** - Generates adaptive quiz questions
-- **Evaluator Agent** - Provides intelligent answer evaluation
-- **Chat Agent** - Offers real-time learning support
+## Tech Stack
 
-### **Development Tools**
-- **ESLint** - Code linting and quality assurance
-- **Concurrently** - Run multiple development servers
-- **Node.js** - JavaScript runtime environment
+### Frontend
+<p>
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-4B32C3?logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/React_Router_DOM-CA4245?logo=reactrouter&logoColor=white" />
+  <img src="https://img.shields.io/badge/Axios-5A29E4?logo=axios&logoColor=white" />
+  <img src="https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white" />
+</p>
 
-## 🚀 Quick Start
+### Backend
+<p>
+  <img src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Uvicorn-121212?logo=uvicorn&logoColor=white" />
+  <img src="https://img.shields.io/badge/Pydantic-E92063?logo=pydantic&logoColor=white" />
+  <img src="https://img.shields.io/badge/Google_Gemini_AI-4285F4?logo=google&logoColor=white" />
+</p>
 
-### Prerequisites
-- **Node.js** (v16 or higher)
-- **Python** (v3.8 or higher)
-- **Google Gemini API Key** ([Get yours here](https://makersuite.google.com/app/apikey))
+### AI Agent Modules
+- **Planning Agent** – Generates structured learning paths  
+- **Quiz Agent** – Creates adaptive quizzes  
+- **Evaluator Agent** – Provides intelligent feedback  
+- **Chat Agent** – Delivers contextual tutoring support  
 
-### Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -85,7 +87,7 @@ AgenticBase is a cutting-edge full-stack application that combines the power of 
    ```
    This will start both the React frontend (http://localhost:5173) and FastAPI backend (http://localhost:8000)
 
-## 🎯 How to Use
+## Usage
 
 ### **Getting Started with MentorMind**
 
@@ -93,11 +95,10 @@ AgenticBase is a cutting-edge full-stack application that combines the power of 
    - Click "New Skill" button
    - Enter the skill you want to learn (e.g., "Python Programming", "Machine Learning")
    - Provide context about your learning goals and current level
-   - AI generates a personalized 10-topic learning plan
+   - AI generates a personalized 10-topic starter learning plan
 
 2. **Start Learning**
    - Select "Continue Skill" to resume existing learning
-   - Click "Want to continue learning" to begin interactive quizzing
    - Answer 5 adaptive questions per subtopic
    - Get instant feedback and explanations
 
@@ -112,7 +113,7 @@ Select Skill → Generate Plan → Start Learning → Interactive Quiz →
 Get Feedback → Next Question → Complete Subtopic → Next Topic
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 ### **Agent-Based Design**
 ```
@@ -138,115 +139,45 @@ Get Feedback → Next Question → Complete Subtopic → Next Topic
                     └─────────────────┘
 ```
 
-### **Data Flow**
-1. **User Input** → Planning Agent creates learning structure
-2. **Topic Selection** → Quiz Agent generates questions
-3. **User Answer** → Evaluator Agent provides feedback
-4. **Learning Support** → Chat Agent offers real-time help
-
-## 📁 Project Structure
+## 📁 Repository Structure
 
 ```
 agentic-base/
+└── .env                        # API keys
+└── .gitignore
+└── index.html
+└── public # has favicon
 ├── src/
+│   └── main.jsx
+│   └── App.jsx
+│   └── AppRoutes.jsx
+│   ├── assets/                 # Static assets
+│   ├── index.css
+│   ├── components/             # React components
+│   ├── pages/                  # Page components
 │   ├── backend/
-│   │   ├── api_routes/          # FastAPI route handlers
-│   │   │   ├── chat_routes.py
-│   │   │   ├── quiz_routes.py
-│   │   │   ├── evaluator_routes.py
+│   │   ├── api_routes/         # FastAPI route handlers
+│   │   │   └── chat_routes.py
+│   │   │   └── quiz_routes.py
+│   │   │   └── evaluator_routes.py
 │   │   │   └── planning_routes.py
-│   │   ├── MMagents/            # AI Agent implementations
-│   │   │   ├── base_agent.py
-│   │   │   ├── planning_agent.py
-│   │   │   ├── quiz_agent.py
-│   │   │   ├── evaluator_agent.py
+│   │   │   └── database_routes.py
+│   │   │   └── utils.py
+│   │   ├── MMagents/            # MentorMind AI agents
+│   │   │   ├── schemas          # Pydantic Schemas for AI output extraction
+│   │   │   └── base_agent.py
+│   │   │   └── planning_agent.py
+│   │   │   └── quiz_agent.py
+│   │   │   └── evaluator_agent.py
 │   │   │   └── chat_agent.py
-│   │   └── mentormind_main.py   # FastAPI application
-│   ├── components/              # React components
-│   ├── pages/                   # Page components
-│   └── assets/                  # Static assets
-├── MMagent_learning/            # Learning data storage
-└── .env                        # Environment variables
+│   │   └── mentormind_main.py   # FastAPI backend entry point
 ```
-
-## 🔧 API Endpoints
-
-### **Planning Agent**
-- `POST /plan/create-skill-plan` - Create new learning plan
-- `GET /plan/all-skills` - Get all available skills
-- `GET /plan/skill-details/{skill_id}` - Get skill information
-
-### **Quiz Agent**
-- `POST /quiz/generate-quiz` - Generate quiz questions
-- `POST /quiz/get-question` - Get specific question
-
-### **Evaluator Agent**
-- `POST /evaluate/evaluate` - Evaluate user answers
-
-### **Chat Agent**
-- `POST /chat/ask` - Get AI tutoring support
-
-## 🎨 UI/UX Features
-
-- **Responsive Design** - Works on desktop, tablet, and mobile
-- **Dark/Light Theme** - Beautiful gradient backgrounds
-- **Smooth Animations** - Engaging user interactions
-- **Hidden Scrollbars** - Clean, minimal interface
-- **Auto-resize Textareas** - Dynamic content adaptation
-- **Real-time Feedback** - Instant AI responses
-
-## 🚀 Future Roadmap
-
-### **Phase 1 - Core Learning** ✅
-- [x] Planning Agent implementation
-- [x] Quiz system with evaluation
-- [x] Chat support integration
-- [x] Multi-skill management
-- [x] Rich markdown support for quiz content
-- [x] Enhanced evaluation flow control
-- [x] Topic mastery calculation system
-
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### **Development Setup**
-```bash
-# Install dependencies
-npm install
-pip install -r requirements.txt
-
-# Run development servers
-npm run dev
-```
-
-### **Code Style**
-- ESLint for JavaScript/React
-- Black for Python formatting
-- Type hints for Python functions
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👨‍💻 Author
-
-**KSahapthan** - [GitHub](https://github.com/KSahapthan)
-
-## 🙏 Acknowledgments
-
-- **Google Gemini AI** for powerful language model capabilities
-- **FastAPI** for the excellent Python web framework
-- **React** team for the amazing frontend library
-- **Vite** for the lightning-fast build tool
 
 ---
 
-**Ready to revolutionize your learning experience?** 🚀
+**Ready to get started with AgenticBase?**
 
-Get started with AgenticBase today and discover the future of AI-powered education!
+Explore the project and see how it can help you streamline learning and code exploration.
 
 [![GitHub stars](https://img.shields.io/github/stars/KSahapthan/agentic-base?style=social)](https://github.com/KSahapthan/agentic-base)
 [![GitHub forks](https://img.shields.io/github/forks/KSahapthan/agentic-base?style=social)](https://github.com/KSahapthan/agentic-base)
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)

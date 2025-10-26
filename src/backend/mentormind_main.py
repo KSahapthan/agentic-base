@@ -12,6 +12,10 @@ from .api_routes.evaluator_routes import router as evaluator_router
 from .api_routes.planning_routes import router as planning_router
 from .api_routes.database_routes import router as database_router
 
+# do not create .pyc files
+import sys
+sys.dont_write_bytecode = True
+
 # Load environment variables
 load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
 

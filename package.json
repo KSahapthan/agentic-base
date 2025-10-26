@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "backend": "uvicorn src.backend.mentormind_main:app --reload",
+    "backend": "set PYTHONDONTWRITEBYTECODE=1 && uvicorn src.backend.mentormind_main:app --reload",
     "frontend": "vite"
   },
   "dependencies": {
