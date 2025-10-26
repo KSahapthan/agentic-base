@@ -211,6 +211,7 @@ const MentorMind = () => {
     if (!userAnswer.trim() || !currentQuestion) return;
     
     setQuizState('evaluation');
+    setShowContinueButton(false); // Reset continue button state
     
     try {
       const response = await axios.post('http://127.0.0.1:8000/evaluate/evaluate', {
@@ -226,12 +227,14 @@ const MentorMind = () => {
         setCorrectAnswersCount(prev => prev + 1);
       }
       
-      // Only show continue button after evaluation is complete
+      // Only show continue button after evaluation is completely rendered
+      // Use a slight delay to ensure the evaluation component has finished rendering
       setTimeout(() => {
         setShowContinueButton(true);
-      }, 1000); // Give user time to see the evaluation
+      }, 1500); // Increased delay to ensure evaluation is visible
     } catch (error) {
       console.error('Error evaluating answer:', error);
+      setShowContinueButton(false); // Keep button hidden on error
     }
   };
 
@@ -554,9 +557,63 @@ const MentorMind = () => {
                 
                 {currentQuestion && (
                   <div>
-                    <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        p: ({ children }) => <p style={{ fontSize: '1.1rem', lineHeight: '1.6', margin: '0 0 12px 0' }}>{children}</p>,
+                        h1: ({ children }) => <h1 style={{ fontSize: '1.4rem', margin: '0 0 16px 0', fontWeight: 'bold' }}>{children}</h1>,
+                        h2: ({ children }) => <h2 style={{ fontSize: '1.2rem', margin: '0 0 14px 0', fontWeight: 'bold' }}>{children}</h2>,
+                        h3: ({ children }) => <h3 style={{ fontSize: '1.1rem', margin: '0 0 12px 0', fontWeight: 'bold' }}>{children}</h3>,
+                        ul: ({ children }) => <ul style={{ margin: '0 0 12px 0', paddingLeft: '20px' }}>{children}</ul>,
+                        ol: ({ children }) => <ol style={{ margin: '0 0 12px 0', paddingLeft: '20px' }}>{children}</ol>,
+                        li: ({ children }) => <li style={{ margin: '4px 0' }}>{children}</li>,
+                        code: ({ children, className }) => {
+                          const isInline = !className;
+                          return isInline ? (
+                            <code style={{ 
+                              backgroundColor: '#f4f4f4', 
+                              padding: '2px 4px', 
+                              borderRadius: '3px',
+                              fontFamily: 'monospace',
+                              fontSize: '0.9em'
+                            }}>
+                              {children}
+                            </code>
+                          ) : (
+                            <code className={className}>{children}</code>
+                          );
+                        },
+                        pre: ({ children }) => (
+                          <pre style={{ 
+                            backgroundColor: '#f4f4f4', 
+                            padding: '12px', 
+                            borderRadius: '6px',
+                            overflow: 'auto',
+                            margin: '0 0 12px 0',
+                            fontSize: '0.9em',
+                            lineHeight: '1.4'
+                          }}>
+                            {children}
+                          </pre>
+                        ),
+                        blockquote: ({ children }) => (
+                          <blockquote style={{ 
+                            borderLeft: '4px solid #c1a45f', 
+                            paddingLeft: '12px', 
+                            margin: '0 0 12px 0',
+                            fontStyle: 'italic',
+                            color: '#666'
+                          }}>
+                            {children}
+                          </blockquote>
+                        ),
+                        strong: ({ children }) => <strong style={{ fontWeight: 'bold', color: '#3a393f' }}>{children}</strong>,
+                        em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>
+                      }}
+                    >
                       {currentQuestion.Q}
-                    </p>
+                    </ReactMarkdown>
                   </div>
                 )}
                 

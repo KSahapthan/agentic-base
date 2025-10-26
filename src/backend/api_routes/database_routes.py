@@ -139,6 +139,53 @@ def update_subtopic_mastery(request: UpdateMasteryRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/calculate-topic-mastery/{skill_id}/{topic_id}")
+def calculate_topic_mastery(skill_id: str, topic_id: str):
+    """Calculate topic mastery as a direct average of all subtopic masteries."""
+    try:
+        skill_folder = LEARNING_SKILLS_PATH / skill_id
+        plan_config_path = skill_folder / "plan_config.json"
+        
+        if not plan_config_path.exists():
+            raise HTTPException(status_code=404, detail="Plan config not found for this skill.")
+        
+        # Load current plan config
+        plan_config = json.loads(plan_config_path.read_text(encoding="utf-8"))
+        
+        # Find the topic
+        topic = next((t for t in plan_config["topics"] if t["topic_id"] == topic_id), None)
+        if not topic:
+            raise HTTPException(status_code=404, detail=f"Topic {topic_id} not found.")
+        
+        # Calculate average mastery from all subtopics
+        subtopic_masteries = [subtopic.get("mastery", 0) for subtopic in topic.get("subtopics", [])]
+        if not subtopic_masteries:
+            return {
+                "status": "success",
+                "topic_mastery": 0,
+                "topic_id": topic_id,
+                "subtopic_count": 0
+            }
+        
+        # Calculate simple average
+        topic_mastery = round(sum(subtopic_masteries) / len(subtopic_masteries), 2)
+        
+        # Update topic mastery in the config
+        topic["mastery"] = topic_mastery
+        plan_config_path.write_text(json.dumps(plan_config, indent=2), encoding="utf-8")
+        
+        return {
+            "status": "success",
+            "topic_mastery": topic_mastery,
+            "topic_id": topic_id,
+            "subtopic_count": len(subtopic_masteries)
+        }
+        
+    except json.JSONDecodeError as e:
+        raise HTTPException(status_code=500, detail=f"Invalid JSON in plan config: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/get-subtopic-status/{skill_id}/{topic_id}/{subtopic_id}")
 def get_subtopic_status(skill_id: str, topic_id: str, subtopic_id: str):
     """Get completion status and mastery for a specific subtopic"""
@@ -206,6 +253,13 @@ def update_topic_progress(request: UpdateTopicProgressRequest):
                     break
         
         if all_subtopics_completed:
+            # Calculate and update topic mastery before moving
+            subtopic_masteries = [subtopic.get("mastery", 0) for subtopic in current_topic.get("subtopics", [])]
+            if subtopic_masteries:
+                topic_mastery = round(sum(subtopic_masteries) / len(subtopic_masteries), 2)
+                current_topic["mastery"] = topic_mastery
+                print(f"Updated topic {request.topic_id} mastery to {topic_mastery}")
+            
             # Move to next topic
             next_topic_index = current_topic_index + 1
             if next_topic_index < len(plan_config["topics"]):
