@@ -2,6 +2,17 @@ from pathlib import Path
 import json
 from typing import Dict, List, Optional
 
+def get_existing_quiz(learning_skills_path: Path, skill_id: str, topic_id: str, subtopic_index: str) -> Optional[dict]:
+    """Check if a quiz already exists for the given skill, topic, and subtopic."""
+    try:
+        quiz_path = learning_skills_path / skill_id / f"quiz_{topic_id}.json"
+        if not quiz_path.exists():
+            return None
+        quiz_data = json.loads(quiz_path.read_text(encoding="utf-8"))
+        return quiz_data.get(str(subtopic_index))
+    except Exception:
+        return None
+
 def init_learning_folders(n) -> Dict[str, Path]:
     # Get base directory
     BASE_DIR = Path(__file__).resolve().parents[n]

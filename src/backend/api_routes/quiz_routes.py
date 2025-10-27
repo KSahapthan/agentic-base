@@ -7,7 +7,7 @@ from ..MMagents.quiz_agent import QuizAgent
 from ..MMagents.schemas.QA_schemas import QuizInput, QuizOutput
 from pydantic import BaseModel
 from pathlib import Path
-from .utils import init_learning_folders
+from .utils import init_learning_folders, get_existing_quiz
 
 load_dotenv()
 router = APIRouter()
@@ -38,6 +38,17 @@ LEARNING_SKILLS_PATH = paths["LEARNING_SKILLS_PATH"]
 def generate_quiz(request: GenerateQuizRequest):
     """Generate 5 quiz questions for a specific subtopic."""
     try:
+        # First check if quiz already exists for this subtopic
+        existing_quiz = get_existing_quiz(LEARNING_SKILLS_PATH, request.skill_id, request.topic_id, "1")
+        if existing_quiz:
+            print(f"DEBUG: Found existing quiz for skill {request.skill_id}, topic {request.topic_id}")
+            return {
+                "status": "success",
+                "quiz_data": existing_quiz["quiz_data"],
+                "skill_id": request.skill_id,
+                "topic_id": request.topic_id
+            }
+        # If no existing quiz, generate new one
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             print("ERROR: GEMINI_PRIMARY_KEY not found in environment variables")
