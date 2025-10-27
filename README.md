@@ -1,7 +1,7 @@
 ## 📄 About the project : AgenticBase
 AgenticBase is a full-stack application that aims to serve as a centralized hub for AI-powered tools, leveraging Large Language Models to enhance developer productivity and learning. The platform currently features MentorMind, an intelligent tutoring system that delivers personalized learning experiences, and will soon introduce CodeExplorer for advanced repository analysis and code understanding
 
-<div align="center" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+<div align="center" style="display: flex; justify-content: center; align-items: center; gap: 30px;">
   <img src="public/ab-raw-3.png" alt="AgenticBase Favicon" height="250"/>
   <img src="public/AgenticBase-MM-demo-0.gif" alt="AgenticBase Demo" height="250"/>
 </div>
