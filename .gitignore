@@ -31,3 +31,4 @@ dist-ssr
 .cursorignore
 __pycache__/
 *.pyc
+/notes

@@ -69,7 +69,7 @@ def get_all_skills_with_mastery(metadata_path: Path) -> List[Dict[str, float]]:
             if not isinstance(topics, list):
                 raise ValueError(f"Invalid topics format in {plan_path}")
             total_mastery = sum(t.get("mastery", 0) for t in topics)
-            avg_mastery = round(total_mastery / len(topics), 1) if topics else 0.0
+            avg_mastery = round(total_mastery / len(topics) * 100, 3) if topics else 0.0
             skills_list.append({
                 "skill_id": skill["id"],
                 "name": skill.get("name", "Unnamed Skill"),
