@@ -3,7 +3,7 @@ AgenticBase is a full-stack application that aims to serve as a centralized hub 
 
 <div align="center" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
   <img src="public/ab-raw-3.png" alt="AgenticBase Favicon" height="250"/>
-  <img src="public/AgenticBase-MM-demo-1.gif" alt="AgenticBase Demo" height="250"/>
+  <img src="public/AgenticBase-MM-demo-0.gif" alt="AgenticBase Demo" height="250"/>
 </div>
 
 ## ✨ Key Features
