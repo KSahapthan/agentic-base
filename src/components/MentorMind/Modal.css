@@ -1,14 +1,13 @@
 /* src/components/MentorMind/Modal.css */
-
 .modal-overlay {
   position: fixed;
-  inset: 0; /* shorthand for top/right/bottom/left */
+  inset: 0; 
   background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(2px); /* subtle blur for depth */
+  backdrop-filter: blur(2px); 
 }
 
 .modal-content {

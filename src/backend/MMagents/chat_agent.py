@@ -36,7 +36,6 @@ class ChatAgent(BaseAgent):
             config=config,
         )
         try:
-            # Format the response nicely
             explanation = response.text.strip()
             return explanation
         except Exception as e:

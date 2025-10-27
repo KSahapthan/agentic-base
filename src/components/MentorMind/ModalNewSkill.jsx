@@ -18,14 +18,12 @@ const ModalNewSkill = ({ onClose, onSkillSelect }) => {
         style,
         level
       });
-
       const res = await axios.post('http://127.0.0.1:8000/plan/create-skill-plan', 
         {
           skill_name: skillName,
           user_context: context
         }
       );
-
       console.log('Plan created:', res.data);
       onSkillSelect(res.data.skill_id);
       onClose();

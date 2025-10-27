@@ -9,7 +9,6 @@ class BaseAgent:
     - system_prompt: guiding prompt for the agent
     - memory: optional memory to store context or past interactions
     """
-
     def __init__(self, name: str, system_prompt: str = "", memory: Any = None):
         self.name = name
         self.system_prompt = system_prompt

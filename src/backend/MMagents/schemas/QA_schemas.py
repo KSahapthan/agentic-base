@@ -1,6 +1,6 @@
-# src/backend/MMagentsschemas/QA_schemas.py
+# src/backend/MMagents/schemas/QA_schemas.py
 from pydantic import BaseModel
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 class QuizQuestion(BaseModel):
     Q: str  # Question
@@ -13,9 +13,9 @@ class QuizInput(BaseModel):
     subtopic_description: str
     focus_areas: List[str]
     user_context: str
-    current_mastery: int
+    current_mastery: float
     evaluator_feedback: Optional[str] = None
 
 class QuizOutput(BaseModel):
-    """Output schema containing 5 quiz questions"""
-    questions: List[QuizQuestion]  # List of 5 questions
+    """Output schema containing x quiz questions"""
+    questions: List[QuizQuestion]  

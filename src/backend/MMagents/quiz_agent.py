@@ -43,7 +43,6 @@ class QuizAgent(BaseAgent):
             config=config,
         )
         try:
-            # Parse and validate response
             quiz_output = QuizOutput.model_validate_json(response.text)
             return quiz_output
         except Exception as e:

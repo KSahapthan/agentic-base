@@ -126,6 +126,7 @@
 .current-skill-info .skill-name,
 .current-skill-info .topic-name {
   color: #444;
+  font-weight: 500;
 }
 
 .current-skill-info .subtopic-name {

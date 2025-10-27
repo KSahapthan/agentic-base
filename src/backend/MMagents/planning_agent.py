@@ -19,7 +19,6 @@ class PlanningAgent(BaseAgent):
         """
         Run the planning agent for any skill and user context.
         """
-        # Short prompt just passing the inputs; main instructions come from system_prompt
         prompt = f"""
             {self.system_prompt}\n
             Skill: {skill}\n

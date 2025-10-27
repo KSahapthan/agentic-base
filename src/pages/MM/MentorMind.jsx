@@ -1,3 +1,4 @@
+// src/pages/MM/MentorMind.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
@@ -9,28 +10,25 @@ import './MentorMind.css';
 
 // define a functional React component
 const MentorMind = () => {
+  // global state
   const [currentSkillId, setCurrentSkillId] = useState(null);
+  // below contains current topic and subtopic details
   const [skillDetails, setSkillDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userQuery, setUserQuery] = useState('');
   const [aiResponse, setAiResponse] = useState('');
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
-  
+  const [allSubtopics, setAllSubtopics] = useState([]);
   // Quiz-related state
-  const [quizState, setQuizState] = useState('idle'); // 'idle', 'learning', 'question', 'evaluation'
+  // 'idle', 'learning', 'question', 'evaluation'
+  const [quizState, setQuizState] = useState('idle'); 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userAnswer, setUserAnswer] = useState('');
   const [evaluation, setEvaluation] = useState(null);
   const [currentQuestionNumber, setCurrentQuestionNumber] = useState(1);
   const [showContinueButton, setShowContinueButton] = useState(false);
-  
-  // Topic and subtopic tracking
-  const [currentSubtopicIndex, setCurrentSubtopicIndex] = useState(0);
-  const [allSubtopics, setAllSubtopics] = useState([]);
-  
-  // Quiz tracking state
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
-  const [currentSubtopicId, setCurrentSubtopicId] = useState(null);
+
 
   // Load saved skill ID on mount (only once)
   useEffect(() => {
@@ -41,13 +39,12 @@ const MentorMind = () => {
     setIsLoading(false);
   }, []);
 
-  // Fetch current topic when skill changes
+  // Fetch current topic and subtopic when skill changes
   useEffect(() => {
     if (!currentSkillId) {
       setSkillDetails(null);
       return;
     }
-
     const fetchCurrentTopic = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
@@ -59,7 +56,13 @@ const MentorMind = () => {
         setSkillDetails({
           skill_name: 'Error loading skill',
           current_topic: 'Error loading topic',
-          current_topic_id: 'Error loading topic ID'
+          current_topic_id: 'Error loading topic ID',
+          current_subtopic_id: 'Error loading subtopic ID',
+          current_subtopic_name: 'Error loading subtopic name',
+          current_subtopic_index: 0,
+          focus_areas: "",
+          current_subtopic_description: "",
+          user_context: ""
         });
       }
     };
@@ -74,20 +77,15 @@ const MentorMind = () => {
     setEvaluation(null);
     setCurrentQuestionNumber(1);
     setShowContinueButton(false);
-    setCurrentSubtopicIndex(0);
-    setAllSubtopics([]);
     setCorrectAnswersCount(0);
-    setCurrentSubtopicId(null);
   };
 
   // Handler to update skill ID
   const handleSkillChange = (skillId) => {
     // Debug log
     console.log('Updating skill ID to:', skillId); 
-    
     // Reset quiz state when changing skills
     resetQuizState();
-    
     // Update skill ID
     setCurrentSkillId(skillId);
     if (skillId) {
@@ -105,7 +103,6 @@ const MentorMind = () => {
   // Handle chat submission
   const handleChatSubmit = async () => {
     if (!userQuery.trim()) return;
-    
     setIsLoadingResponse(true);
     try {
       const response = await axios.post('http://127.0.0.1:8000/chat/ask', {
@@ -140,19 +137,13 @@ const MentorMind = () => {
 
   // Load topic data and subtopics
   const loadTopicData = async () => {
-    if (!currentSkillId) return;
-    
+    if (!currentSkillId || !skillDetails?.current_topic_id) return;
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
-      const skillInfo = response.data;
-      
-      // Load the plan config to get subtopics
-      const planResponse = await axios.get(`http://127.0.0.1:8000/plan/get-topic-data/${currentSkillId}/${skillInfo.current_topic_id}`);
+      const planResponse = await axios.get(
+        `http://127.0.0.1:8000/plan/get-topic-data/${currentSkillId}/${skillDetails.current_topic_id}`
+      );
       const topicData = planResponse.data;
-      
       setAllSubtopics(topicData.subtopics || []);
-      setCurrentSubtopicIndex(0);
-      
       return topicData;
     } catch (error) {
       console.error('Error loading topic data:', error);
@@ -160,13 +151,11 @@ const MentorMind = () => {
     }
   };
 
-  // Quiz functionality
+  // Quiz functionality to generate all questions for current subtopic
   const startLearning = async () => {
     if (!currentSkillId || !skillDetails) return;
-    
     setQuizState('learning');
     setShowContinueButton(false);
-    
     try {
       // Load topic data first
       const topicData = await loadTopicData();
@@ -174,27 +163,20 @@ const MentorMind = () => {
         alert('No subtopics found for this topic. Please check your learning plan.');
         return;
       }
-      
-      // Start with first subtopic
-      const firstSubtopic = topicData.subtopics[0];
-      console.log('DEBUG: Starting with first subtopic:', firstSubtopic);
-      setCurrentSubtopicIndex(0);
-      setCurrentSubtopicId(firstSubtopic.subtopic_id);
-      setCorrectAnswersCount(0); // Reset correct answers count
-      
-      // Generate quiz for first subtopic
+      // Continue with current_subtopic_index
+      setCorrectAnswersCount(0); 
       await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
         skill_id: currentSkillId,
         topic_id: skillDetails.current_topic_id,
-        subtopic_name: firstSubtopic.name,
-        subtopic_description: firstSubtopic.description || `Learning about ${firstSubtopic.name}`,
-        focus_areas: ['understanding', 'application'],
-        user_context: 'Interactive learning session',
-        current_mastery: 50
+        subtopic_id: skillDetails.current_subtopic_id,
+        subtopic_name: skillDetails.current_subtopic_name,
+        subtopic_description: skillDetails.current_subtopic_description,
+        focus_areas: skillDetails.focus_areas,
+        user_context: skillDetails.user_context,
+        current_mastery: 50,
       });
-      
       setCurrentQuestionNumber(1);
-      loadQuestion(1);
+      loadQuestion(1, skillDetails);
     } catch (error) {
       console.error('Error starting learning:', error);
       console.error('Error details:', error.response?.data || error.message);
@@ -202,19 +184,17 @@ const MentorMind = () => {
     }
   };
 
-  const loadQuestion = async (questionNumber, subtopicIndex = null) => {
-    const actualSubtopicIndex = (subtopicIndex !== null ? subtopicIndex : currentSubtopicIndex) + 1;
-    console.log(`Loading question ${questionNumber} for subtopic index: ${actualSubtopicIndex}`);
-    
+  // Load a specific question
+  const loadQuestion = async (questionNumber , updatedDetails) => {
+    console.log(`Loading question ${questionNumber} for subtopic id: ${updatedDetails.current_subtopic_id}`);
     try {
       const response = await axios.post('http://127.0.0.1:8000/quiz/get-question', {
         skill_id: currentSkillId,
-        topic_id: skillDetails.current_topic_id,
-        subtopic_index: actualSubtopicIndex, 
+        topic_id: updatedDetails.current_topic_id,
+        subtopic_id: updatedDetails.current_subtopic_id,
         question_number: questionNumber
       });
-      
-      console.log(`Question loaded successfully from subtopic ${actualSubtopicIndex}`);
+      console.log(`Question loaded successfully from subtopic ${updatedDetails.current_subtopic_id}`);
       setCurrentQuestion(response.data.question);
       setQuizState('question');
       setUserAnswer('');
@@ -226,87 +206,71 @@ const MentorMind = () => {
     }
   };
 
+  // Submit answer for evaluation
   const submitAnswer = async () => {
     if (!userAnswer.trim() || !currentQuestion) return;
-    
     setQuizState('evaluation');
-    setShowContinueButton(false); // Reset continue button state
-    
+    setShowContinueButton(false); 
     try {
       const response = await axios.post('http://127.0.0.1:8000/evaluate/evaluate', {
         true_answer: currentQuestion.A,
         user_answer: userAnswer,
         give_feedback: false
       });
-      
       setEvaluation(response.data.evaluation);
-      
-      // Track correct answers
       if (response.data.evaluation.evaluation === '1') {
         setCorrectAnswersCount(prev => prev + 1);
       }
-      
       // Only show continue button after evaluation is completely rendered
       // Use a slight delay to ensure the evaluation component has finished rendering
       setTimeout(() => {
         setShowContinueButton(true);
-      }, 1500); // Increased delay to ensure evaluation is visible
+      }, 1500);
     } catch (error) {
       console.error('Error evaluating answer:', error);
       setShowContinueButton(false); // Keep button hidden on error
     }
   };
 
+  // Proceed to next question or handle subtopic completion
   const nextQuestion = async () => {
     if (currentQuestionNumber < 5) {
       // Move to next question in current subtopic
       const nextNumber = currentQuestionNumber + 1;
       setCurrentQuestionNumber(nextNumber);
-      loadQuestion(nextNumber);
+      loadQuestion(nextNumber, skillDetails);
     } else {
       // All questions completed for this subtopic
       try {
         console.log('DEBUG: Attempting to complete subtopic:', {
           skill_id: currentSkillId,
           topic_id: skillDetails.current_topic_id,
-          subtopic_id: currentSubtopicId,
-          currentSubtopicIndex,
+          subtopic_id: skillDetails.current_subtopic_id,
           allSubtopicsLength: allSubtopics.length
         });
-        
         // Safety check: ensure we have a valid subtopic ID
-        if (!currentSubtopicId) {
+        if (!skillDetails.current_subtopic_id) {
           console.error('ERROR: currentSubtopicId is null or undefined');
           alert('Error: Current subtopic ID is missing. Please restart the learning session.');
           return;
         }
-        
-        // Mark current subtopic as completed and update mastery
-        await axios.post('http://127.0.0.1:8000/db/mark-subtopic-completed', {
-          skill_id: currentSkillId,
-          topic_id: skillDetails.current_topic_id,
-          subtopic_id: currentSubtopicId
-        });
-        
+        // update mastery
         await axios.post('http://127.0.0.1:8000/db/update-subtopic-mastery', {
           skill_id: currentSkillId,
           topic_id: skillDetails.current_topic_id,
-          subtopic_id: currentSubtopicId,
+          subtopic_id: skillDetails.current_subtopic_id,
           correct_answers: correctAnswersCount,
           total_questions: 5
         });
-        
-        console.log(`Subtopic ${currentSubtopicId} completed! Correct answers: ${correctAnswersCount}/5`);
-        
-        // Update topic progress and get next topic/subtopic
-        const progressResponse = await axios.post('http://127.0.0.1:8000/db/update-topic-progress', {
+        // Mark current subtopic as completed and get the next details
+        const progressResponse = await axios.post('http://127.0.0.1:8000/db/mark-subtopic-completed', {
           skill_id: currentSkillId,
           topic_id: skillDetails.current_topic_id,
-          subtopic_id: currentSubtopicId
+          subtopic_id: skillDetails.current_subtopic_id
         });
-        
-        const { current_topic_id, all_topics_completed } = progressResponse.data;
-        
+        console.log(`Subtopic ${skillDetails.current_subtopic_id} completed! Correct answers: ${correctAnswersCount}/5`);
+        const { current_topic_id } = progressResponse.data;
+        const all_topics_completed = (current_topic_id === null);
         if (all_topics_completed) {
           // All topics completed
           setQuizState('idle');
@@ -315,71 +279,65 @@ const MentorMind = () => {
         } else if (current_topic_id !== skillDetails.current_topic_id) {
           // Moved to next topic
           console.log(`Moved to next topic: ${current_topic_id}`);
-          
           // Update skill details
           const newSkillDetails = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
           setSkillDetails(newSkillDetails.data);
-          
+          const updated = newSkillDetails.data;
           // Load new topic data
           const topicData = await loadTopicData();
           if (topicData && topicData.subtopics && topicData.subtopics.length > 0) {
             setAllSubtopics(topicData.subtopics);
-            setCurrentSubtopicIndex(0);
-            setCurrentSubtopicId(topicData.subtopics[0].subtopic_id);
             setCorrectAnswersCount(0);
-            
             // Set loading state before generating quiz
             setQuizState('learning');
-            
             // Generate quiz for first subtopic of new topic
             await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
               skill_id: currentSkillId,
-              topic_id: current_topic_id,
-              subtopic_name: topicData.subtopics[0].name,
-              subtopic_description: topicData.subtopics[0].description || `Learning about ${topicData.subtopics[0].name}`,
-              focus_areas: ['understanding', 'application'],
-              user_context: 'Interactive learning session',
-              current_mastery: 50
+              topic_id: updated.current_topic_id,
+              subtopic_id: updated.current_subtopic_id,
+              subtopic_name: updated.current_subtopic_name,
+              subtopic_description: updated.current_subtopic_description,
+              focus_areas: updated.focus_areas,
+              user_context: updated.user_context,
+              current_mastery: 0
             });
-            
             setCurrentQuestionNumber(1);
             setQuizState('question');
             setUserAnswer('');
             setEvaluation(null);
             setShowContinueButton(false);
-            loadQuestion(1);
+            loadQuestion(1, updated);
           }
         } else {
           // Moved to next subtopic in same topic
-          const nextSubtopicIndex = currentSubtopicIndex + 1;
+          // Update skill details
+          const newSkillDetails = await axios.get(`http://127.0.0.1:8000/plan/skill-details/${currentSkillId}`);
+          setSkillDetails(newSkillDetails.data);
+          const updated = newSkillDetails.data;
+          const nextSubtopicIndex = updated.current_subtopic_index;
           if (nextSubtopicIndex < allSubtopics.length) {
             console.log(`Moving to next subtopic: ${nextSubtopicIndex + 1}/${allSubtopics.length}`);
-            setCurrentSubtopicIndex(nextSubtopicIndex);
             const nextSubtopic = allSubtopics[nextSubtopicIndex];
             console.log('DEBUG: Next subtopic:', nextSubtopic);
-            setCurrentSubtopicId(nextSubtopic.subtopic_id);
             setCorrectAnswersCount(0);
-            
-            // Set loading state before generating quiz
             setQuizState('learning');
-            
             // Generate quiz for next subtopic
             await axios.post('http://127.0.0.1:8000/quiz/generate-quiz', {
               skill_id: currentSkillId,
-              topic_id: skillDetails.current_topic_id,
-              subtopic_name: nextSubtopic.name,
-              subtopic_description: nextSubtopic.description || `Learning about ${nextSubtopic.name}`,
-              focus_areas: ['understanding', 'application'],
-              user_context: 'Interactive learning session',
-              current_mastery: 50
+              topic_id: updated.current_topic_id,
+              subtopic_id: updated.current_subtopic_id,
+              subtopic_name: updated.current_subtopic_name,
+              subtopic_description: updated.current_subtopic_description,
+              focus_areas: updated.focus_areas,
+              user_context: updated.user_context,
+              current_mastery: 0
             });
-            
             setCurrentQuestionNumber(1);
             setQuizState('question');
             setUserAnswer('');
             setEvaluation(null);
             setShowContinueButton(false);
-            loadQuestion(1, nextSubtopicIndex);
+            loadQuestion(1, updated);
           }
         }
       } catch (error) {
@@ -388,7 +346,7 @@ const MentorMind = () => {
           response: error.response?.data,
           status: error.response?.status,
           message: error.message,
-          currentSubtopicId,
+          currentSubtopicId: skillDetails.current_subtopic_id,
           skillDetails
         });
         alert(`Error completing subtopic: ${error.response?.data?.detail || error.message}`);
@@ -404,7 +362,6 @@ const MentorMind = () => {
     textarea.style.height = 'auto';
     textarea.style.height = textarea.scrollHeight + 'px';
   };
-
   if (isLoading) {
     return (
       <div className="mentormind-container loading">
@@ -413,6 +370,7 @@ const MentorMind = () => {
     );
   }
 
+  // main render
   return (
     <div className="mentormind-container">
       {/* Left Section — Hint / Chat */}
@@ -430,7 +388,7 @@ const MentorMind = () => {
             <textarea
               value={userQuery}
               onChange={handleTextareaChange}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder="Ask questions or get hints from the AI tutor here"
               disabled={isLoadingResponse}
             />
@@ -522,9 +480,9 @@ const MentorMind = () => {
         {/* Current Subtopic and Question Info */}
         {currentSkillId && skillDetails && (
           <div className="current-skill-info">
-            <span className="subtopic-id">Subtopic {currentSubtopicIndex + 1}</span>
+            <span className="subtopic-id">Subtopic {skillDetails.current_subtopic_index + 1}</span>
             <span className="separator">•</span>
-            <span className="subtopic-name">{skillDetails.current_subtopic_name || allSubtopics[currentSubtopicIndex]?.name || 'Loading...'}</span>
+            <span className="subtopic-name">{skillDetails.current_subtopic_name || allSubtopics[skillDetails.current_subtopic_index]?.name || 'Loading...'}</span>
             {currentQuestion && (
               <>
                 <span className="separator">•</span>
@@ -569,7 +527,7 @@ const MentorMind = () => {
                   <div style={{ textAlign: 'center', padding: '20px' }}>
                     <p>Generating quiz questions...</p>
                     <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '8px' }}>
-                      {currentSubtopicIndex === 0 ? 'Preparing your first quiz' : `Loading questions for subtopic ${currentSubtopicIndex + 1}`}
+                      {skillDetails.current_subtopic_index === 0 ? 'Preparing your first quiz' : `Loading questions for subtopic ${skillDetails.current_subtopic_index + 1}`}
                     </p>
                   </div>
                 )}
@@ -703,7 +661,7 @@ const MentorMind = () => {
                   }}
                 >
                   {currentQuestionNumber < 5 ? 'Next Question →' : 
-                   (currentSubtopicIndex + 1 < allSubtopics.length ? 'Next Subtopic →' : 'Complete Topic →')}
+                   (skillDetails.current_subtopic_index + 1 < allSubtopics.length ? 'Next Subtopic →' : 'Complete Topic →')}
                 </button>
               </div>
             )}

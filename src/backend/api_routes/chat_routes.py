@@ -8,7 +8,7 @@ from pydantic import BaseModel
 load_dotenv()
 router = APIRouter()
 
-# --- Request body schema ---
+# Request body schema 
 class ChatRequest(BaseModel):
     user_query: str
 
@@ -16,7 +16,6 @@ class ChatRequest(BaseModel):
 def ask_question(request: ChatRequest):
     """Ask a question to the AI tutor."""
     try:
-        # Initialize ChatAgent
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="Gemini API key not found.")

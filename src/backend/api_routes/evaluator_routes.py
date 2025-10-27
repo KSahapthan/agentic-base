@@ -9,7 +9,7 @@ from pydantic import BaseModel
 load_dotenv()
 router = APIRouter()
 
-# --- Request body schema ---
+# Request body schema 
 class EvaluateAnswerRequest(BaseModel):
     true_answer: str
     user_answer: str
@@ -19,7 +19,6 @@ class EvaluateAnswerRequest(BaseModel):
 def evaluate_answer(request: EvaluateAnswerRequest):
     """Evaluate user's answer against the correct answer."""
     try:
-        # Initialize EvaluatorAgent
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             raise HTTPException(status_code=500, detail="Gemini API key not found.")

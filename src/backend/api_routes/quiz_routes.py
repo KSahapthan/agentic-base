@@ -12,22 +12,34 @@ from .utils import init_learning_folders, get_existing_quiz
 load_dotenv()
 router = APIRouter()
 
-# --- Request body schema ---
+# Request body schema 
 class GenerateQuizRequest(BaseModel):
     skill_id: str
     topic_id: str
+    subtopic_id: str  
     subtopic_name: str
     subtopic_description: str
     focus_areas: list[str]
     user_context: str = ""
-    current_mastery: int = 0.3
-    evaluator_feedback: str = None
+    current_mastery: float = 0.0
+    evaluator_feedback: str | None = None
 
 class GetQuizRequest(BaseModel):
     skill_id: str
     topic_id: str
-    subtopic_index: int = 1
+    subtopic_id: str
     question_number: int = 1
+
+# Helper Functions 
+def load_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail=f"Invalid JSON format in {path.name}")
+def save_json(path: Path, data: dict):
+    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 # Initialize learning folders and get paths
 paths = init_learning_folders(3)
@@ -38,25 +50,31 @@ LEARNING_SKILLS_PATH = paths["LEARNING_SKILLS_PATH"]
 def generate_quiz(request: GenerateQuizRequest):
     """Generate 5 quiz questions for a specific subtopic."""
     try:
-        # First check if quiz already exists for this subtopic
-        existing_quiz = get_existing_quiz(LEARNING_SKILLS_PATH, request.skill_id, request.topic_id, "1")
+        # Extract numeric part from subtopic_id for storage
+        subtopic_num = request.subtopic_id.split('_')[-1].lstrip('0')
+        # Check if quiz already exists
+        existing_quiz = get_existing_quiz(
+            LEARNING_SKILLS_PATH,
+            request.skill_id,
+            request.topic_id,
+            request.subtopic_id
+        )
         if existing_quiz:
-            print(f"DEBUG: Found existing quiz for skill {request.skill_id}, topic {request.topic_id}")
             return {
                 "status": "success",
                 "quiz_data": existing_quiz["quiz_data"],
                 "skill_id": request.skill_id,
                 "topic_id": request.topic_id
             }
-        # If no existing quiz, generate new one
+        # Initialize API + Agent
         api_key = os.getenv("GEMINI_PRIMARY_KEY")
         if not api_key:
             print("ERROR: GEMINI_PRIMARY_KEY not found in environment variables")
             raise HTTPException(status_code=500, detail="Gemini API key not found. Please check your .env file.")
         agent = QuizAgent(api_key=api_key)
-        # Create quiz input
+        # Create Quiz Input 
         quiz_input = QuizInput(
-            topic_name=request.topic_id,  
+            topic_name=request.topic_id,
             subtopic_name=request.subtopic_name,
             subtopic_description=request.subtopic_description,
             focus_areas=request.focus_areas,
@@ -64,31 +82,20 @@ def generate_quiz(request: GenerateQuizRequest):
             current_mastery=request.current_mastery,
             evaluator_feedback=request.evaluator_feedback
         )
-        # Generate quiz
-        print(f"DEBUG: Generating quiz for topic: {request.topic_id}")
+        # Generate Quiz
         quiz_output: QuizOutput = agent.run(quiz_input)
-        print(f"DEBUG: Quiz generated successfully, questions: {len(quiz_output.questions)}")
-        # Save quiz to skill folder for persistence
+        # Save Quiz to File
         skill_folder = LEARNING_SKILLS_PATH / request.skill_id
-        skill_folder.mkdir(exist_ok=True)  # Ensure folder exists
+        skill_folder.mkdir(exist_ok=True)
         quiz_path = skill_folder / f"quiz_{request.topic_id}.json"
-        # Load existing quiz data or create new structure
-        if quiz_path.exists():
-            existing_data = json.loads(quiz_path.read_text(encoding="utf-8"))
-        else:
-            existing_data = {}
-        # Find the next subtopic index
-        subtopic_index = 1
-        while str(subtopic_index) in existing_data:
-            subtopic_index += 1
-        # Store quiz data with subtopic index as key
-        existing_data[str(subtopic_index)] = {
+        quiz_data = load_json(quiz_path)
+        quiz_data[subtopic_num] = {
             "subtopic_name": request.subtopic_name,
             "subtopic_description": request.subtopic_description,
             "quiz_data": quiz_output.model_dump()
         }
-        quiz_path.write_text(json.dumps(existing_data, indent=2), encoding="utf-8")
-        print(f"DEBUG: Quiz saved to: {quiz_path} with subtopic index: {subtopic_index}")
+        save_json(quiz_path, quiz_data)
+        # Return Response
         return {
             "status": "success",
             "quiz_data": quiz_output.model_dump(),
@@ -100,31 +107,42 @@ def generate_quiz(request: GenerateQuizRequest):
 
 @router.post("/get-question")
 def get_question(request: GetQuizRequest):
-    """Get a specific question from the saved quiz."""
     try:
-        # Load quiz data from file
-        skill_folder = LEARNING_SKILLS_PATH / request.skill_id
-        quiz_path = skill_folder / f"quiz_{request.topic_id}.json"
-        if not quiz_path.exists():
-            raise HTTPException(status_code=404, detail=f"No quiz found for topic {request.topic_id}.")
-        quiz_data = json.loads(quiz_path.read_text(encoding="utf-8"))
-        # Get the specific subtopic data
-        subtopic_key = str(request.subtopic_index)
-        if subtopic_key not in quiz_data:
-            raise HTTPException(status_code=404, detail=f"Subtopic {request.subtopic_index} not found for topic {request.topic_id}.")
-        subtopic_data = quiz_data[subtopic_key]
-        questions = subtopic_data["quiz_data"]["questions"] 
-        question_index = request.question_number - 1  # Convert to 0-based index
+        # Extract numeric part from subtopic_id
+        existing_quiz = get_existing_quiz(
+            LEARNING_SKILLS_PATH,
+            request.skill_id,
+            request.topic_id,
+            request.subtopic_id
+        )
+        if not existing_quiz:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No quiz found for topic '{request.topic_id}' and subtopic '{request.subtopic_id}'."
+            )
+        # Extract question data 
+        questions = existing_quiz["quiz_data"].get("questions", [])
+        if not questions:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No questions available for subtopic '{request.subtopic_id}'."
+            )
+        question_index = request.question_number - 1  
         if question_index < 0 or question_index >= len(questions):
-            raise HTTPException(status_code=404, detail=f"Question {request.question_number} not found for subtopic {request.subtopic_index}.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Question {request.question_number} out of range for subtopic '{request.subtopic_id}'."
+            )
         question = questions[question_index]
         return {
             "status": "success",
             "question": question,
             "question_number": request.question_number,
             "total_questions": len(questions),
-            "subtopic_name": subtopic_data["subtopic_name"],
-            "subtopic_index": request.subtopic_index
+            "subtopic_name": existing_quiz.get("subtopic_name", ""),
+            "subtopic_id": request.subtopic_id
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
