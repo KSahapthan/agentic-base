@@ -32,6 +32,8 @@ class QuizAgent(BaseAgent):
             User Context: {quiz_input.user_context}
             Current Mastery: {quiz_input.current_mastery}
             Evaluator Feedback: {quiz_input.evaluator_feedback or 'None provided'}
+            \nIf MCQ questions are being generated : embed MCQ options directly inside the Q string.
+            Format options on new lines prefixed with A), B), C), etc.
             """  
         config = types.GenerateContentConfig(
             response_mime_type="application/json",
