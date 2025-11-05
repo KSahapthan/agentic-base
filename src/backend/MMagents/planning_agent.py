@@ -13,7 +13,7 @@ class PlanningAgent(BaseAgent):
         super().__init__(name=name, system_prompt=SYSTEM_PROMPT)
         self.api_key = api_key
         self.client = genai.Client(api_key=self.api_key)
-        self.model_name = "gemini-2.5-flash-preview-05-20"
+        self.model_name = "gemini-2.5-flash-preview-09-2025"
 
     def run(self, skill: str, context: str) -> PlanOutput:
         """
