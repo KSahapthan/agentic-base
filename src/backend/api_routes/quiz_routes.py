@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from ..MMagents.quiz_agent import QuizAgent
 from ..MMagents.schemas.QA_schemas import QuizInput, QuizOutput
 from pydantic import BaseModel
+from typing import Optional
 from pathlib import Path
 from .utils import init_learning_folders, get_existing_quiz
 
@@ -18,7 +19,7 @@ class GenerateQuizRequest(BaseModel):
     topic_id: str
     subtopic_id: str  
     subtopic_name: str
-    subtopic_description: str
+    subtopic_description: Optional[str] = None
     focus_areas: list[str]
     user_context: str = ""
     current_mastery: float = 0.0

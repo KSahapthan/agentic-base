@@ -173,7 +173,7 @@ const MentorMind = () => {
         subtopic_description: skillDetails.current_subtopic_description,
         focus_areas: skillDetails.focus_areas,
         user_context: skillDetails.user_context,
-        current_mastery: 50,
+        current_mastery: 0,
       });
       setCurrentQuestionNumber(1);
       loadQuestion(1, skillDetails);
